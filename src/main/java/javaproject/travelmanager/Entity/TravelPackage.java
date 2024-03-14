@@ -80,4 +80,61 @@ public class TravelPackage {
     public void removeDestinationById(Long destinationId) {
         this.destinations.removeIf(destination -> destination.getId().equals(destinationId));
     }
+    // Method to print the itinerary of the travel package
+    public void printItinerary() {
+        System.out.println("Travel Package: " + name);
+        System.out.println("Destinations:");
+        for (Destination destination : destinations) {
+            System.out.println("- " + destination.getName());
+            System.out.println("  Activities:");
+            for (Activity activity : destination.getActivities()) {
+                System.out.println("  - Name: " + activity.getName());
+                System.out.println("    Description: " + activity.getDescription());
+                System.out.println("    Cost: " + activity.getCost());
+                System.out.println("    Capacity: " + activity.getCapacity());
+            }
+        }
+    }
+
+    public void printPassengerList() {
+        System.out.println("Travel Package: " + name);
+        System.out.println("Passenger Capacity: " + passengerCapacity);
+        System.out.println("Number of Passengers Enrolled: " + passengers.size());
+        System.out.println("Passenger List:");
+        for (Passenger passenger : passengers) {
+            System.out.println("- Name: " + passenger.getName() + ", Passenger Number: " + passenger.getPassengerNumber());
+        }
+    }
+
+    public void printPassengerDetails() {
+        System.out.println("Travel Package: " + name);
+        for (Passenger passenger : passengers) {
+            System.out.println("Passenger Name: " + passenger.getName());
+            System.out.println("Passenger Number: " + passenger.getPassengerNumber());
+            System.out.println("Balance: " + passenger.getBalance());
+            System.out.println("Activities:");
+            for (Activity activity : passenger.getActivities()) {
+                System.out.println("  - Activity Name: " + activity.getName());
+                System.out.println("    Destination: " + activity.getDestination().getName());
+                System.out.println("    Price Paid: " + activity.getCost());
+            }
+        }
+    }
+    public void printAvailableActivities() {
+        System.out.println("Travel Package: " + name);
+        int totalAvailableSpaces = 0;
+        for (Destination destination : destinations) {
+            for (Activity activity : destination.getActivities()) {
+                int availableSpaces = activity.getRemaining();
+                if (availableSpaces > 0) {
+                    totalAvailableSpaces += availableSpaces;
+                    System.out.println("- Activity Name: " + activity.getName());
+                    System.out.println("  Destination: " + destination.getName());
+                    System.out.println("  Available Spaces: " + availableSpaces);
+                }
+            }
+        }
+        System.out.println("Total Available Spaces in the Travel Package: " + totalAvailableSpaces);
+    }
+
 }

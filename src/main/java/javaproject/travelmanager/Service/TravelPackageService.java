@@ -139,4 +139,40 @@ public class TravelPackageService {
     public List<TravelPackage> getAllTravelPackages() {
         return travelPackageRepository.findAll();
     }
+
+    public void printItinerary(Long travelPackageId) {
+        Optional<TravelPackage> travelPackage = travelPackageRepository.findById(travelPackageId);
+        if (travelPackage.isPresent()) {
+            travelPackage.get().printItinerary();
+        } else {
+            System.out.println("Travel Package not found.");
+        }
+    }
+
+    public void printPassengerList(Long travelPackageId) {
+        Optional<TravelPackage> travelPackage = travelPackageRepository.findById(travelPackageId);
+        if (travelPackage.isPresent()) {
+            travelPackage.get().printPassengerList();
+        } else {
+            System.out.println("Travel Package not found.");
+        }
+    }
+
+    public void printPassengerDetails(Long travelPackageId) {
+        Optional<TravelPackage> travelPackage = travelPackageRepository.findById(travelPackageId);
+        if (travelPackage.isPresent()) {
+            travelPackage.get().printPassengerDetails();
+        } else {
+            System.out.println("Travel Package not found.");
+        }
+    }
+
+    public void printAvailableActivities(Long travelPackageId) {
+        Optional<TravelPackage> travelPackage = travelPackageRepository.findById(travelPackageId);
+        if (travelPackage.isPresent()) {
+            travelPackage.get().printAvailableActivities();
+        } else {
+            System.out.println("Travel Package not found.");
+        }
+    }
 }

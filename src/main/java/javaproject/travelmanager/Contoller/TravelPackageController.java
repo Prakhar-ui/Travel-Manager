@@ -143,4 +143,28 @@ public class TravelPackageController {
             return ResponseEntity.notFound().build();
         }
     }
+    @GetMapping("/{travelPackageId}/print-itinerary")
+    public ResponseEntity<String> printItinerary(@PathVariable Long travelPackageId) {
+        travelPackageService.printItinerary(travelPackageId);
+        return ResponseEntity.ok("Itinerary printed."); // Assuming you want to return a success message
+    }
+
+    @GetMapping("/{travelPackageId}/print-passenger-list")
+    public ResponseEntity<String> printPassengerList(@PathVariable Long travelPackageId) {
+        travelPackageService.printPassengerList(travelPackageId);
+        return ResponseEntity.ok("Passenger List printed."); // Assuming you want to return a success message
+    }
+
+    @GetMapping("/{travelPackageId}/print-passenger-details")
+    public ResponseEntity<String> printPassengerDetails(@PathVariable Long travelPackageId) {
+        travelPackageService.printPassengerDetails(travelPackageId);
+        return ResponseEntity.ok("Passenger Details printed."); // Assuming you want to return a success message
+    }
+
+    @GetMapping("/{travelPackageId}/print-available-activities")
+    public ResponseEntity<String> printAvailableActivities(@PathVariable Long travelPackageId) {
+        travelPackageService.printAvailableActivities(travelPackageId);
+        return ResponseEntity.ok("Available Activities printed."); // Assuming you want to return a success message
+    }
 }
+

@@ -103,7 +103,7 @@ public class DataLoader implements CommandLineRunner {
             }
         }
         package1.setPassengers(passengers);
-        
+
         passengerRepository.saveAll(Arrays.asList(passenger1, passenger2, passenger3));
 
     }
