@@ -1,5 +1,6 @@
 package javaproject.travelmanager.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,6 +21,7 @@ public class Activity {
 
     @ManyToOne
     @JoinColumn(name = "destination_id")
+    @JsonIgnore
     private Destination destination;
 
     public Activity(String name, String description, double cost, int capacity) {

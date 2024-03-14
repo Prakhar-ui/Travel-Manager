@@ -80,33 +80,31 @@ public class DataLoader implements CommandLineRunner {
         package1.addDestination(destination2);
         package1.addDestination(destination3);
 
+        passenger1.addTravelPackage(package1);
+        passenger2.addTravelPackage(package1);
+        passenger3.addTravelPackage(package1);
+
         travelPackageRepository.save(package1);
 
-        List<Passenger> passengers =  package1.getPassengers();
+        passengerRepository.saveAll(Arrays.asList(passenger1, passenger2, passenger3));
+
+        List<Passenger> passengers = package1.getPassengers();
 
         for (Passenger passenger: passengers){
-            if (Objects.equals(passenger.getName(), "Rahul")){
+            if (passenger.getName() == passenger1.getName()){
                 passenger.addActivity(activity1);
                 passenger.addActivity(activity2);
-            } else if (Objects.equals(passenger.getName(), "Sonia")){
+            } else if (passenger.getName() == passenger2.getName()){
                 passenger.addActivity(activity3);
                 passenger.addActivity(activity4);
             } else {
                 passenger.addActivity(activity5);
                 passenger.addActivity(activity6);
             }
-
         }
-
-        passenger1.addTravelPackage(package1);
-        passenger2.addTravelPackage(package1);
-        passenger3.addTravelPackage(package1);
-
-        passengerRepository.saveAll(Arrays.asList(passenger1, passenger2, passenger3));
-
-
         package1.setPassengers(passengers);
-        travelPackageRepository.save(package1);
+        
+        passengerRepository.saveAll(Arrays.asList(passenger1, passenger2, passenger3));
 
     }
 }

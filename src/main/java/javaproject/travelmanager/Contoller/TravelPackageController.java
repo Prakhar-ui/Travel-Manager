@@ -32,6 +32,12 @@ public class TravelPackageController {
         }
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<TravelPackage>> getAllTravelPackages() {
+        List<TravelPackage> travelPackages = travelPackageService.getAllTravelPackages();
+        return ResponseEntity.ok(travelPackages);
+    }
+
     @PostMapping("/{travelPackageId}/add-destination")
     public ResponseEntity<TravelPackage> addDestinationToTravelPackage(
             @PathVariable Long travelPackageId,

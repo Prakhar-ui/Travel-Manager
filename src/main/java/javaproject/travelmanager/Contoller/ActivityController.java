@@ -35,6 +35,8 @@ public class ActivityController {
     @GetMapping("/all")
     public ResponseEntity<List<Activity>> getAllActivities() {
         List<Activity> activities = activityService.getAllActivities();
+        System.out.println("activities.size() " + activities.size());
+        System.out.println("activities.size() " + activities.getFirst().getDestination());
         if (!activities.isEmpty()) {
             return ResponseEntity.ok(activities);
         } else {

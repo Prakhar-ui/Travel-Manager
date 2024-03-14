@@ -1,5 +1,6 @@
 package javaproject.travelmanager.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,6 +25,7 @@ public class Passenger {
     @ManyToMany
     @JoinTable(name = "Passenger_travelPackages",
             joinColumns = @JoinColumn(name = "passenger_id"))
+    @JsonIgnore
     private List<TravelPackage> travelPackages = new ArrayList<>();
 
     @ManyToMany

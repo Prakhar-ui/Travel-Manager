@@ -135,4 +135,8 @@ public class TravelPackageService {
         }
         return null;
     }
+
+    public List<TravelPackage> getAllTravelPackages() {
+        return travelPackageRepository.findAll();
+    }
 }
