@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>List of Remaining Activities</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div th:replace="navbar :: navbar"></div>
+<h2>List of Remaining Activities</h2>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Activity Name</th>
+        <th>Space Available</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="remainingActivity : ${remainingActivities}">
+        <td th:text="${remainingActivity.activity.name}"></td>
+        <td>
+            <div th:text="${remainingActivity.bookedCount}"></div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>List of Travel Packages</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div th:replace="navbar :: navbar"></div>
+    <h2>List of Travel Packages</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Destination</th>
+          <th>Passengers</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="travelPackage : ${travelPackages}">
+          <td th:text="${travelPackage.name}"></td>
+          <td>
+            <ul>
+              <li th:each="destination : ${travelPackage.destinations}">
+                <span th:text="${destination.name}"></span>
+                <ul>
+                  <li th:each="activity : ${destination.activities}">
+                    <span
+                      th:text="${activity.name + ' - ' + activity.description + ' - Cost: ' + activity.cost + ' - Capacity: ' + activity.capacity + ' - Remaining: ' + activity.remaining}"
+                    ></span>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </td>
+          <td>
+            <ul>
+              <li th:each="passenger : ${travelPackage.passengers}">
+                <span
+                  th:text="${passenger.name + ', Type: ' +  passenger.passengerType + ', Balance: ' + passenger.balance}"
+                ></span>
+                <ul>
+                  <li>
+                    <span>Selected Activities: </span>
+                    <span
+                      th:each="activity, iterStat : ${passenger.activities}"
+                      th:if="${iterStat != null}"
+                    >
+                      <span th:text="${activity.name}"></span>
+                      <span th:unless="${iterStat.last}"> | </span>
+                    </span>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

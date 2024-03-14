@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Activity for Travel Package</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div th:replace="navbar :: navbar"></div>
+<div class="container">
+    <h2>Add New Travel Package</h2>
+    <form action="/saveTravelPackage" method="post">
+        <div class="form-group">
+            <label for="travelPackageName">Travel Package Name:</label>
+            <input type="text" class="form-control" id="travelPackageName" name="travelPackageName" required>
+        </div>
+        <div class="form-group">
+            <label for="travelPackageCapacity">Passenger Capacity:</label>
+            <input type="number" class="form-control" id="travelPackageCapacity" name="travelPackageCapacity" required>
+        </div>
+        <div class="form-group">
+            <label>Select Destinations:</label>
+            <div th:each="destination : ${destinations}">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="destination" name="travelPackageDestinations" th:value="${destination.id}">
+                    <label class="form-check-label" th:for="${'destination' + destination.id}" th:text="${destination.name}"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Select Passengers:</label>
+            <div th:each="passenger : ${passengers}">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="passenger" name="travelPackagePassengers" th:value="${passenger.id}">
+                    <label class="form-check-label" th:for="${'passenger' + passenger.id}" th:text="${passenger.name}"></label>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
