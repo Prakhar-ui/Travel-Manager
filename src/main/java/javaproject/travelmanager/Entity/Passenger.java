@@ -21,8 +21,10 @@ public class Passenger {
     private PassengerType passengerType;
     private double balance;
 
-    @ManyToMany(mappedBy = "passengers")
-    private List<TravelPackage> travelPackages;
+    @ManyToMany
+    @JoinTable(name = "Passenger_travelPackages",
+            joinColumns = @JoinColumn(name = "passenger_id"))
+    private List<TravelPackage> travelPackages = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
