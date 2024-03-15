@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controller class for managing activities.
+ */
+
 @RestController
 @RequestMapping("/activities")
 public class ActivityController {
@@ -17,12 +21,26 @@ public class ActivityController {
     @Autowired
     private ActivityService activityService;
 
+    /**
+     * Adds a new activity.
+     *
+     * @param activityDTO The DTO representing the activity to be added.
+     * @return ResponseEntity containing the created activity and HTTP status 201 (Created) if successful,
+     * or HTTP status 500 (Internal Server Error) if an error occurs during creation.
+     */
     @PostMapping("/add")
     public ResponseEntity<Activity> addActivity(@RequestBody ActivityDTO activityDTO) {
         Activity createdActivity = activityService.addActivity(activityDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdActivity);
     }
 
+    /**
+     * Retrieves an activity by its ID.
+     *
+     * @param id The ID of the activity to retrieve.
+     * @return ResponseEntity containing the retrieved activity and HTTP status 200 (OK) if found,
+     * or HTTP status 404 (Not Found) if the activity does not exist.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Activity> getActivityById(@PathVariable Long id) {
         Activity activity = activityService.getActivityById(id);
@@ -33,6 +51,12 @@ public class ActivityController {
         }
     }
 
+    /**
+     * Retrieves all activities.
+     *
+     * @return ResponseEntity containing a list of all activities and HTTP status 200 (OK) if activities exist,
+     * or HTTP status 204 (No Content) if no activities exist.
+     */
     @GetMapping("/all")
     public ResponseEntity<List<Activity>> getAllActivities() {
         List<Activity> activities = activityService.getAllActivities();
@@ -43,6 +67,14 @@ public class ActivityController {
         }
     }
 
+    /**
+     * Updates an existing activity.
+     *
+     * @param id          The ID of the activity to update.
+     * @param activityDTO The DTO representing the updated activity.
+     * @return ResponseEntity containing the updated activity and HTTP status 200 (OK) if successful,
+     * or HTTP status 404 (Not Found) if the activity does not exist.
+     */
     @PostMapping("/edit/{id}")
     public ResponseEntity<Activity> updateActivity(@PathVariable Long id, @RequestBody ActivityDTO activityDTO) {
         Activity updatedActivity = activityService.updateActivity(id, activityDTO);
@@ -53,6 +85,13 @@ public class ActivityController {
         }
     }
 
+    /**
+     * Deletes an activity by its ID.
+     *
+     * @param id The ID of the activity to delete.
+     * @return ResponseEntity with HTTP status 204 (No Content) if successful,
+     * or HTTP status 404 (Not Found) if the activity does not exist.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteActivity(@PathVariable Long id) {
         boolean deleted = activityService.deleteActivity(id);

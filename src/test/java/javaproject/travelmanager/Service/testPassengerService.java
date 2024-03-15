@@ -23,6 +23,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * This class contains unit tests for the PassengerService class. It tests the functionality of methods
+ * such as adding, retrieving, updating, and deleting passengers.
+ */
 @SpringBootTest
 public class testPassengerService {
 

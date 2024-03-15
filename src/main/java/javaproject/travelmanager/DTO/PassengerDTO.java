@@ -11,6 +11,9 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data Transfer Object (DTO) class for representing passenger information.
+ */
 @Getter
 @Setter
 public class PassengerDTO {

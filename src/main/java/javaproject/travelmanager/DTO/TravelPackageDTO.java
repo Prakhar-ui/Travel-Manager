@@ -10,6 +10,9 @@ import lombok.Setter;
 
 import java.util.List;
 
+/**
+ * Data Transfer Object (DTO) representing a travel package.
+ */
 @Getter
 @Setter
 public class TravelPackageDTO {

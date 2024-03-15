@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service class responsible for handling operations related to passengers.
+ */
 @Service
 public class PassengerService {
 
@@ -26,6 +29,12 @@ public class PassengerService {
     @Autowired
     private ActivityRepository activityRepository;
 
+    /**
+     * Adds a new passenger.
+     *
+     * @param passengerDTO The DTO containing passenger information.
+     * @return The newly created passenger.
+     */
     public Passenger addPassenger(PassengerDTO passengerDTO) {
         Passenger passenger = new Passenger();
         passenger.setName(passengerDTO.getName());
@@ -35,15 +44,33 @@ public class PassengerService {
         return passengerRepository.save(passenger);
     }
 
+    /**
+     * Retrieves a passenger by its ID.
+     *
+     * @param id The ID of the passenger to retrieve.
+     * @return The passenger, if found; otherwise, null.
+     */
     public Passenger getPassengerById(Long id) {
         Optional<Passenger> optionalPassenger = passengerRepository.findById(id);
         return optionalPassenger.orElse(null);
     }
 
+    /**
+     * Retrieves all passengers.
+     *
+     * @return A list of all passengers.
+     */
     public List<Passenger> getAllPassengers() {
         return passengerRepository.findAll();
     }
 
+    /**
+     * Updates an existing passenger.
+     *
+     * @param id              The ID of the passenger to update.
+     * @param passengerDetails The DTO containing updated passenger information.
+     * @return The updated passenger, if found; otherwise, null.
+     */
     public Passenger updatePassenger(Long id, PassengerDTO passengerDetails) {
         Optional<Passenger> optionalPassenger = passengerRepository.findById(id);
         if (optionalPassenger.isPresent()) {
@@ -53,13 +80,11 @@ public class PassengerService {
             existingPassenger.setPassengerType(passengerDetails.getPassengerType());
             existingPassenger.setBalance(passengerDetails.getBalance());
 
-            // Check if travelPackagesId is not null and not empty before processing
             if (passengerDetails.getTravelPackagesId() != null && !passengerDetails.getTravelPackagesId().isEmpty()) {
                 List<TravelPackage> travelPackages = travelPackageRepository.findAllById(passengerDetails.getTravelPackagesId());
                 existingPassenger.setTravelPackages(travelPackages);
             }
 
-            // Check if activitiesId is not null and not empty before processing
             if (passengerDetails.getActivitiesId() != null && !passengerDetails.getActivitiesId().isEmpty()) {
                 List<Activity> activities = activityRepository.findAllById(passengerDetails.getActivitiesId());
                 existingPassenger.setActivities(activities);
@@ -71,6 +96,12 @@ public class PassengerService {
         }
     }
 
+    /**
+     * Deletes a passenger by its ID.
+     *
+     * @param id The ID of the passenger to delete.
+     * @return True if the passenger was deleted successfully; otherwise, false.
+     */
     public boolean deletePassenger(Long id) {
         Optional<Passenger> optionalPassenger = passengerRepository.findById(id);
         if (optionalPassenger.isPresent()) {
@@ -81,4 +112,3 @@ public class PassengerService {
         }
     }
 }
-

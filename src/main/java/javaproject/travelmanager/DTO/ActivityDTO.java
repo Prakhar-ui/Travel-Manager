@@ -3,6 +3,9 @@ package javaproject.travelmanager.DTO;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Data Transfer Object (DTO) class for representing activity information.
+ */
 @Getter
 @Setter
 public class ActivityDTO {

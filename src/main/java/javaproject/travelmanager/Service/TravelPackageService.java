@@ -16,6 +16,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service class responsible for handling operations related to travel packages.
+ */
+
 @Service
 public class TravelPackageService {
 
@@ -31,6 +35,14 @@ public class TravelPackageService {
     @Autowired
     private ActivityRepository activityRepository;
 
+    /**
+     * Adds an activity to a specific passenger within a travel package.
+     *
+     * @param travelPackageId The ID of the travel package.
+     * @param passengerId The ID of the passenger.
+     * @param activityId The ID of the activity to add.
+     * @return The updated travel package if successful, otherwise null.
+     */
     public TravelPackage addActivityToPassenger(Long travelPackageId, Long passengerId, Long activityId) {
         Optional<TravelPackage> optionalTravelPackage = travelPackageRepository.findById(travelPackageId);
         Optional<Activity> optionalActivity = activityRepository.findById(activityId);
@@ -54,8 +66,13 @@ public class TravelPackageService {
         return null;
     }
 
-
-
+    /**
+     * Adds a destination to a travel package.
+     *
+     * @param travelPackageId The ID of the travel package.
+     * @param destinationId The ID of the destination to add.
+     * @return The updated travel package if successful, otherwise null.
+     */
     public TravelPackage addDestinationToTravelPackage(Long travelPackageId, Long destinationId) {
         Optional<TravelPackage> optionalTravelPackage = travelPackageRepository.findById(travelPackageId);
         Optional<Destination> optionalDestination = destinationRepository.findById(destinationId);
@@ -73,7 +90,13 @@ public class TravelPackageService {
         return null;
     }
 
-
+    /**
+     * Removes a destination from a travel package.
+     *
+     * @param travelPackageId The ID of the travel package.
+     * @param destinationId The ID of the destination to remove.
+     * @return The updated travel package if successful, otherwise null.
+     */
     public TravelPackage removeDestinationFromTravelPackage(Long travelPackageId, Long destinationId) {
         Optional<TravelPackage> optionalTravelPackage = travelPackageRepository.findById(travelPackageId);
         if (optionalTravelPackage.isPresent()) {
@@ -85,6 +108,14 @@ public class TravelPackageService {
         return null;
     }
 
+    /**
+     * Removes an activity from a specific passenger within a travel package.
+     *
+     * @param travelPackageId The ID of the travel package.
+     * @param passengerId The ID of the passenger.
+     * @param activityId The ID of the activity to remove.
+     * @return The updated travel package if successful, otherwise null.
+     */
     public TravelPackage removeActivityFromPassenger(Long travelPackageId, Long passengerId, Long activityId) {
         Optional<TravelPackage> optionalTravelPackage = travelPackageRepository.findById(travelPackageId);
 
@@ -103,6 +134,13 @@ public class TravelPackageService {
         return null;
     }
 
+    /**
+     * Adds multiple destinations to a travel package.
+     *
+     * @param travelPackageId The ID of the travel package.
+     * @param destinationIds The IDs of the destinations to add.
+     * @return The updated travel package if successful, otherwise null.
+     */
     public TravelPackage addDestinationsToTravelPackage(Long travelPackageId, List<Long> destinationIds) {
         Optional<TravelPackage> optionalTravelPackage = travelPackageRepository.findById(travelPackageId);
         if (optionalTravelPackage.isPresent()) {
@@ -117,7 +155,14 @@ public class TravelPackageService {
         return null;
     }
 
-
+    /**
+     * Adds multiple activities to a specific passenger within a travel package.
+     *
+     * @param travelPackageId The ID of the travel package.
+     * @param passengerId The ID of the passenger.
+     * @param activitiesId The IDs of the activities to add.
+     * @return The updated travel package if successful, otherwise null.
+     */
     public TravelPackage addActivitiesToPassenger(Long travelPackageId, Long passengerId, List<Long> activitiesId) {
 
         Optional<TravelPackage> optionalTravelPackage = travelPackageRepository.findById(travelPackageId);
@@ -145,8 +190,13 @@ public class TravelPackageService {
         return null;
     }
 
-
-
+    /**
+     * Adds a passenger to a travel package.
+     *
+     * @param travelPackageId The ID of the travel package.
+     * @param passengerId The ID of the passenger to add.
+     * @return The updated travel package if successful, otherwise null.
+     */
     public TravelPackage addPassengerToTravelPackage(Long travelPackageId, Long passengerId) {
         Optional<TravelPackage> optionalTravelPackage = travelPackageRepository.findById(travelPackageId);
         if (optionalTravelPackage.isPresent()) {
@@ -164,6 +214,13 @@ public class TravelPackageService {
         return null;
     }
 
+    /**
+     * Removes a passenger from a travel package.
+     *
+     * @param travelPackageId The ID of the travel package.
+     * @param passengerId The ID of the passenger to remove.
+     * @return The updated travel package if successful, otherwise null.
+     */
     public TravelPackage removePassengerFromTravelPackage(Long travelPackageId, Long passengerId) {
         Optional<TravelPackage> optionalTravelPackage = travelPackageRepository.findById(travelPackageId);
         if (optionalTravelPackage.isPresent()) {
@@ -175,6 +232,13 @@ public class TravelPackageService {
         return null;
     }
 
+    /**
+     * Adds multiple passengers to a travel package.
+     *
+     * @param travelPackageId The ID of the travel package.
+     * @param passengersId The IDs of the passengers to add.
+     * @return The updated travel package if successful, otherwise null.
+     */
     public TravelPackage addPassengersToTravelPackage(Long travelPackageId, List<Long> passengersId) {
         Optional<TravelPackage> optionalTravelPackage = travelPackageRepository.findById(travelPackageId);
         if (optionalTravelPackage.isPresent()) {
@@ -189,11 +253,20 @@ public class TravelPackageService {
         return null;
     }
 
-
+    /**
+     * Retrieves all travel packages.
+     *
+     * @return A list of all travel packages.
+     */
     public List<TravelPackage> getAllTravelPackages() {
         return travelPackageRepository.findAll();
     }
 
+    /**
+     * Prints the itinerary of a travel package.
+     *
+     * @param travelPackageId The ID of the travel package.
+     */
     public void printItinerary(Long travelPackageId) {
         Optional<TravelPackage> travelPackage = travelPackageRepository.findById(travelPackageId);
         if (travelPackage.isPresent()) {
@@ -203,6 +276,11 @@ public class TravelPackageService {
         }
     }
 
+    /**
+     * Prints the passenger list of a travel package.
+     *
+     * @param travelPackageId The ID of the travel package.
+     */
     public void printPassengerList(Long travelPackageId) {
         Optional<TravelPackage> travelPackage = travelPackageRepository.findById(travelPackageId);
         if (travelPackage.isPresent()) {
@@ -212,6 +290,11 @@ public class TravelPackageService {
         }
     }
 
+    /**
+     * Prints the details of passengers within a travel package.
+     *
+     * @param travelPackageId The ID of the travel package.
+     */
     public void printPassengerDetails(Long travelPackageId) {
         Optional<TravelPackage> travelPackage = travelPackageRepository.findById(travelPackageId);
         if (travelPackage.isPresent()) {
@@ -221,6 +304,11 @@ public class TravelPackageService {
         }
     }
 
+    /**
+     * Prints the available activities within a travel package.
+     *
+     * @param travelPackageId The ID of the travel package.
+     */
     public void printAvailableActivities(Long travelPackageId) {
         Optional<TravelPackage> travelPackage = travelPackageRepository.findById(travelPackageId);
         if (travelPackage.isPresent()) {
@@ -230,6 +318,12 @@ public class TravelPackageService {
         }
     }
 
+    /**
+     * Adds a new travel package.
+     *
+     * @param travelPackageDTO The DTO containing travel package information.
+     * @return The newly created travel package.
+     */
     public TravelPackage addTravelPackage(TravelPackageDTO travelPackageDTO) {
         TravelPackage travelPackage = new TravelPackage(travelPackageDTO.getName(), travelPackageDTO.getPassengerCapacity());
 
@@ -249,8 +343,13 @@ public class TravelPackageService {
         return travelPackage;
     }
 
-
-
+    /**
+     * Updates an existing travel package.
+     *
+     * @param travelPackageId The ID of the travel package to update.
+     * @param travelPackageDTO The DTO containing updated travel package information.
+     * @return The updated travel package if successful, otherwise null.
+     */
     public TravelPackage updateTravelPackage(Long travelPackageId, TravelPackageDTO travelPackageDTO) {
         Optional<TravelPackage> optionalTravelPackage = travelPackageRepository.findById(travelPackageId);
         if (optionalTravelPackage.isPresent()) {

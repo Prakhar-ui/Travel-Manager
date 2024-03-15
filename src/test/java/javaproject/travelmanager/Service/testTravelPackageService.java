@@ -26,6 +26,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * This class contains unit tests for the TravelPackageService class. It utilizes Mockito for mocking dependencies and Spring Boot's @SpringBootTest
+ * annotation for integration testing.
+ */
 @SpringBootTest
 public class testTravelPackageService {
 

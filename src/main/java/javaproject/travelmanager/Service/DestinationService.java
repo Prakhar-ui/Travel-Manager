@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service class responsible for handling operations related to destinations.
+ */
 @Service
 public class DestinationService {
 
@@ -19,33 +22,53 @@ public class DestinationService {
     @Autowired
     private ActivityRepository activityRepository;
 
+    /**
+     * Adds a new destination.
+     *
+     * @param destination The DTO containing destination information.
+     * @return The newly created destination.
+     */
     public Destination addDestination(DestinationDTO destination) {
-        // Create a new Destination entity
         Destination newDestination = new Destination();
         newDestination.setName(destination.getName());
-        // Save the destination entity
         return destinationRepository.save(newDestination);
     }
+
+    /**
+     * Retrieves a destination by its ID.
+     *
+     * @param id The ID of the destination to retrieve.
+     * @return The destination, if found; otherwise, null.
+     */
     public Destination getDestinationById(Long id) {
         Optional<Destination> optionalDestination = destinationRepository.findById(id);
         return optionalDestination.orElse(null);
     }
 
+    /**
+     * Retrieves all destinations.
+     *
+     * @return A list of all destinations.
+     */
     public List<Destination> getAllDestinations() {
         return destinationRepository.findAll();
     }
 
+    /**
+     * Updates an existing destination.
+     *
+     * @param id               The ID of the destination to update.
+     * @param destinationDetails The DTO containing updated destination information.
+     * @return The updated destination, if found; otherwise, null.
+     */
     public Destination updateDestination(Long id, DestinationDTO destinationDetails) {
         Optional<Destination> optionalDestination = destinationRepository.findById(id);
         if (optionalDestination.isPresent()) {
             Destination existingDestination = optionalDestination.get();
             existingDestination.setName(destinationDetails.getName());
 
-            // Check if activitiesID is not null and not empty before processing
             if (destinationDetails.getActivitiesID() != null && !destinationDetails.getActivitiesID().isEmpty()) {
-                // Retrieve activities from the repository based on IDs
                 List<Activity> activities = activityRepository.findAllById(destinationDetails.getActivitiesID());
-                // Set activities to the existing destination
                 existingDestination.setActivities(activities);
             }
 
@@ -55,6 +78,12 @@ public class DestinationService {
         }
     }
 
+    /**
+     * Deletes a destination by its ID.
+     *
+     * @param id The ID of the destination to delete.
+     * @return True if the destination was deleted successfully; otherwise, false.
+     */
     public boolean deleteDestination(Long id) {
         Optional<Destination> optionalDestination = destinationRepository.findById(id);
         if (optionalDestination.isPresent()) {
@@ -65,3 +94,4 @@ public class DestinationService {
         }
     }
 }
+

@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controller class for managing destinations.
+ */
 @RestController
 @RequestMapping("/destinations")
 public class DestinationController {
@@ -17,12 +20,26 @@ public class DestinationController {
     @Autowired
     private DestinationService destinationService;
 
+    /**
+     * Adds a new destination.
+     *
+     * @param destinationDTO The DTO representing the destination to be added.
+     * @return ResponseEntity containing the created destination and HTTP status 201 (Created) if successful,
+     * or HTTP status 500 (Internal Server Error) if an error occurs during creation.
+     */
     @PostMapping("/add")
     public ResponseEntity<Destination> addDestination(@RequestBody DestinationDTO destinationDTO) {
         Destination createdDestination = destinationService.addDestination(destinationDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdDestination);
     }
 
+    /**
+     * Retrieves a destination by its ID.
+     *
+     * @param id The ID of the destination to retrieve.
+     * @return ResponseEntity containing the retrieved destination and HTTP status 200 (OK) if found,
+     * or HTTP status 404 (Not Found) if the destination does not exist.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Destination> getDestinationById(@PathVariable Long id) {
         Destination destination = destinationService.getDestinationById(id);
@@ -33,6 +50,12 @@ public class DestinationController {
         }
     }
 
+    /**
+     * Retrieves all destinations.
+     *
+     * @return ResponseEntity containing a list of all destinations and HTTP status 200 (OK) if destinations exist,
+     * or HTTP status 204 (No Content) if no destinations exist.
+     */
     @GetMapping("/all")
     public ResponseEntity<List<Destination>> getAllDestinations() {
         List<Destination> destinations = destinationService.getAllDestinations();
@@ -43,6 +66,14 @@ public class DestinationController {
         }
     }
 
+    /**
+     * Updates an existing destination.
+     *
+     * @param id               The ID of the destination to update.
+     * @param destinationDTO   The DTO representing the updated destination.
+     * @return ResponseEntity containing the updated destination and HTTP status 200 (OK) if successful,
+     * or HTTP status 404 (Not Found) if the destination does not exist.
+     */
     @PostMapping("/edit/{id}")
     public ResponseEntity<Destination> updateDestination(@PathVariable Long id, @RequestBody DestinationDTO destinationDTO) {
         Destination updatedDestination = destinationService.updateDestination(id, destinationDTO);
@@ -53,6 +84,13 @@ public class DestinationController {
         }
     }
 
+    /**
+     * Deletes a destination by its ID.
+     *
+     * @param id The ID of the destination to delete.
+     * @return ResponseEntity with HTTP status 204 (No Content) if successful,
+     * or HTTP status 404 (Not Found) if the destination does not exist.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDestination(@PathVariable Long id) {
         boolean deleted = destinationService.deleteDestination(id);
