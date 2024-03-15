@@ -23,10 +23,10 @@ public class TravelPackage {
             joinColumns = @JoinColumn(name = "travel_package_id"),
             inverseJoinColumns = @JoinColumn(name = "destination_id")
     )
-    private List<Destination> destinations;
+    private List<Destination> destinations = new ArrayList<>();
 
     @ManyToMany(mappedBy = "travelPackages")
-    private List<Passenger> passengers;
+    private List<Passenger> passengers = new ArrayList<>();
 
     public TravelPackage(String name, int passengerCapacity) {
         this.name = name;
@@ -51,19 +51,17 @@ public class TravelPackage {
         this.passengers.remove(passenger);
     }
 
-    public void addPassengers(List<Passenger> passengers) {
-        this.passengers.addAll(passengers);
-    }
 
     public void removePassengerById(Long passengerId) {
         this.passengers.removeIf(passenger -> passenger.getId().equals(passengerId));
     }
 
     public void addActivitiesToPassenger(Long passengerId, List<Activity> activities) {
-        Optional<Passenger> optionalPassenger = passengers.stream()
-                .filter(passenger -> passenger.getId().equals(passengerId))
-                .findFirst();
-        optionalPassenger.ifPresent(passenger -> passenger.addActivities(activities));
+            Optional<Passenger> optionalPassenger = passengers.stream()
+                    .filter(passenger -> passenger.getId().equals(passengerId))
+                    .findFirst();
+            optionalPassenger.ifPresent(passenger -> passenger.setActivities(activities));
+
     }
 
     public void removeActivityFromPassenger(Long passengerId, Long activityId) {
@@ -74,7 +72,9 @@ public class TravelPackage {
     }
 
     public void addDestinations(List<Destination> destinations) {
-        this.destinations.addAll(destinations);
+            this.destinations.addAll(destinations);
+
+
     }
 
     public void removeDestinationById(Long destinationId) {
@@ -111,12 +111,19 @@ public class TravelPackage {
         for (Passenger passenger : passengers) {
             System.out.println("Passenger Name: " + passenger.getName());
             System.out.println("Passenger Number: " + passenger.getPassengerNumber());
-            System.out.println("Balance: " + passenger.getBalance());
+            System.out.println("Passenger Type: " + passenger.getPassengerType());
+            if (passenger.getPassengerType() != PassengerType.PREMIUM){
+                System.out.println("Balance: " + passenger.getBalance());
+            }
             System.out.println("Activities:");
             for (Activity activity : passenger.getActivities()) {
                 System.out.println("  - Activity Name: " + activity.getName());
                 System.out.println("    Destination: " + activity.getDestination().getName());
-                System.out.println("    Price Paid: " + activity.getCost());
+                if (passenger.getPassengerType() == PassengerType.PREMIUM){
+                    System.out.println("    Price Paid: " + "Free for Premium Passengers");
+                } else {
+                    System.out.println("    Price Paid: " + activity.getCost());
+                }
             }
         }
     }

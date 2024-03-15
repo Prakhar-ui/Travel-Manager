@@ -1,5 +1,6 @@
 package javaproject.travelmanager.Contoller;
 
+import javaproject.travelmanager.DTO.ActivityDTO;
 import javaproject.travelmanager.Entity.Activity;
 import javaproject.travelmanager.Service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,8 @@ public class ActivityController {
     private ActivityService activityService;
 
     @PostMapping("/add")
-    public ResponseEntity<Activity> addActivity(@RequestBody Activity activity) {
-        Activity createdActivity = activityService.addActivity(activity);
+    public ResponseEntity<Activity> addActivity(@RequestBody ActivityDTO activityDTO) {
+        Activity createdActivity = activityService.addActivity(activityDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdActivity);
     }
 
@@ -35,8 +36,6 @@ public class ActivityController {
     @GetMapping("/all")
     public ResponseEntity<List<Activity>> getAllActivities() {
         List<Activity> activities = activityService.getAllActivities();
-        System.out.println("activities.size() " + activities.size());
-        System.out.println("activities.size() " + activities.getFirst().getDestination());
         if (!activities.isEmpty()) {
             return ResponseEntity.ok(activities);
         } else {
@@ -44,9 +43,9 @@ public class ActivityController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Activity> updateActivity(@PathVariable Long id, @RequestBody Activity activityDetails) {
-        Activity updatedActivity = activityService.updateActivity(id, activityDetails);
+    @PostMapping("/edit/{id}")
+    public ResponseEntity<Activity> updateActivity(@PathVariable Long id, @RequestBody ActivityDTO activityDTO) {
+        Activity updatedActivity = activityService.updateActivity(id, activityDTO);
         if (updatedActivity != null) {
             return ResponseEntity.ok(updatedActivity);
         } else {

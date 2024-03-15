@@ -1,5 +1,6 @@
 package javaproject.travelmanager.Contoller;
 
+import javaproject.travelmanager.DTO.PassengerDTO;
 import javaproject.travelmanager.Entity.Passenger;
 import javaproject.travelmanager.Service.PassengerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,8 @@ public class PassengerController {
     private PassengerService passengerService;
 
     @PostMapping("/add")
-    public ResponseEntity<Passenger> addPassenger(@RequestBody Passenger passenger) {
-        Passenger createdPassenger = passengerService.addPassenger(passenger);
+    public ResponseEntity<Passenger> addPassenger(@RequestBody PassengerDTO passengerDTO) {
+        Passenger createdPassenger = passengerService.addPassenger(passengerDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPassenger);
     }
 
@@ -42,9 +43,9 @@ public class PassengerController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Passenger> updatePassenger(@PathVariable Long id, @RequestBody Passenger passengerDetails) {
-        Passenger updatedPassenger = passengerService.updatePassenger(id, passengerDetails);
+    @PostMapping("/edit/{id}")
+    public ResponseEntity<Passenger> updatePassenger(@PathVariable Long id, @RequestBody PassengerDTO passengerDTO) {
+        Passenger updatedPassenger = passengerService.updatePassenger(id, passengerDTO);
         if (updatedPassenger != null) {
             return ResponseEntity.ok(updatedPassenger);
         } else {

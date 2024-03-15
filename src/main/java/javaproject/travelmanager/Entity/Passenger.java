@@ -34,7 +34,7 @@ public class Passenger {
             joinColumns = @JoinColumn(name = "passenger_id"),
             inverseJoinColumns = @JoinColumn(name = "activity_id")
     )
-    private List<Activity> activities;
+    private List<Activity> activities = new ArrayList<>();
 
     public Passenger(String name, String passengerNumber, PassengerType passengerType, double balance) {
         this.name = name;
@@ -51,18 +51,14 @@ public class Passenger {
             this.balance -= activity.getCost();
         }
         this.activities.add(activity);
-        Destination destination = activity.getDestination();
-        destination.removeActivity(activity);
-        destination.addActivity(activity);
     }
 
     public void removeActivity(Activity activity) {
         activity.unSelectActivity();
-        this.balance += activity.getCost();
+        if (this.passengerType != PassengerType.PREMIUM){
+            this.balance += activity.getCost();
+        }
         this.activities.remove(activity);
-        Destination destination = activity.getDestination();
-        destination.removeActivity(activity);
-        destination.addActivity(activity);
     }
 
     public void addTravelPackage(TravelPackage travelPackage) {
@@ -73,13 +69,14 @@ public class Passenger {
         this.travelPackages.remove(travelPackage);
     }
 
-    // Method to add activities to the passenger
-    public void addActivities(List<Activity> activities) {
-        this.activities.addAll(activities);
-    }
 
-    // Method to remove an activity from the passenger by its ID
     public void removeActivityById(Long activityId) {
-        this.activities.removeIf(activity -> activity.getId().equals(activityId));
+        for (Activity destActivity : activities) {
+            if (destActivity.getId().equals(activityId)) {
+                destActivity.unSelectActivity();
+                removeActivity(destActivity);
+                return;
+            }
+        }
     }
 }
