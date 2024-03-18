@@ -14,7 +14,7 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Passenger {
+public abstract class Passenger {
     /**
      * The unique identifier of the passenger.
      */
@@ -76,34 +76,6 @@ public class Passenger {
         this.passengerNumber = passengerNumber;
         this.passengerType = passengerType;
         this.balance = balance;
-        this.activities = new ArrayList<>();
-        this.travelPackages = new ArrayList<>();
-    }
-
-    /**
-     * Adds an activity to the passenger.
-     *
-     * @param activity The activity to add.
-     */
-    public void addActivity(Activity activity) {
-        activity.selectActivity();
-        if (this.passengerType != PassengerType.PREMIUM){
-            this.balance -= activity.getCost();
-        }
-        this.activities.add(activity);
-    }
-
-    /**
-     * Removes an activity from the passenger.
-     *
-     * @param activity The activity to remove.
-     */
-    public void removeActivity(Activity activity) {
-        activity.unSelectActivity();
-        if (this.passengerType != PassengerType.PREMIUM){
-            this.balance += activity.getCost();
-        }
-        this.activities.remove(activity);
     }
 
     /**
@@ -118,24 +90,23 @@ public class Passenger {
     /**
      * Removes a travel package from the passenger.
      *
-     * @param travelPackage The travel package to remove.
+     * @param travelPackageId The travel package to remove.
      */
-    public void removeTravelPackage(TravelPackage travelPackage) {
-        this.travelPackages.remove(travelPackage);
+    public void removeTravelPackage(Long travelPackageId) {
+        this.travelPackages.removeIf(travelPackage -> travelPackage.getId().equals(travelPackageId));
     }
 
     /**
-     * Removes an activity from the passenger by its ID.
+     * Adds an activity to the passenger.
      *
-     * @param activityId The ID of the activity to remove.
+     * @param activity The activity to add.
      */
-    public void removeActivityById(Long activityId) {
-        for (Activity destActivity : activities) {
-            if (destActivity.getId().equals(activityId)) {
-                destActivity.unSelectActivity();
-                removeActivity(destActivity);
-                return;
-            }
-        }
-    }
+    public abstract void signUpForActivity(Activity activity);
+
+    /**
+     * Removes an activity from the passenger.
+     *
+     * @param activityId The activity to remove.
+     */
+    public abstract void removeActivity(Long activityId);
 }
