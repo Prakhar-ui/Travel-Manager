@@ -54,10 +54,15 @@ public class Destination {
     /**
      * Removes an activity from the destination.
      *
-     * @param activity The activity to remove.
+     * @param activityId The activity to remove.
      */
-    public void removeActivity(Activity activity) {
-        this.activities.remove(activity);
-        activity.setDestination(null);
+    public void removeActivity(Long activityId) {
+        Optional<Activity> optionalActivity = this.activities.stream()
+                .filter(activity -> activity.getId().equals(activityId))
+                .findFirst();
+        optionalActivity.ifPresent(activity -> {
+            activity.setDestination(null);
+            this.activities.remove(activity);
+        });
     }
 }

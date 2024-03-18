@@ -79,6 +79,20 @@ public abstract class Passenger {
     }
 
     /**
+     * Adds an activity to the passenger.
+     *
+     * @param activity The activity to add.
+     */
+    public abstract void signUpForActivity(Activity activity);
+
+    /**
+     * Removes an activity to the passenger.
+     *
+     * @param activityId The activity to add.
+     */
+    public abstract void removeActivity(Long activityId);
+
+    /**
      * Adds a travel package to the passenger.
      *
      * @param travelPackage The travel package to add.
@@ -95,18 +109,4 @@ public abstract class Passenger {
     public void removeTravelPackage(Long travelPackageId) {
         this.travelPackages.removeIf(travelPackage -> travelPackage.getId().equals(travelPackageId));
     }
-
-    /**
-     * Adds an activity to the passenger.
-     *
-     * @param activity The activity to add.
-     */
-    public abstract void signUpForActivity(Activity activity);
-
-    /**
-     * Removes an activity from the passenger.
-     *
-     * @param activityId The activity to remove.
-     */
-    public abstract void removeActivity(Long activityId);
 }

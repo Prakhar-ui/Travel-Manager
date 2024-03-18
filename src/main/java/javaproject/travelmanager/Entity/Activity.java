@@ -103,7 +103,7 @@ public class Activity {
      */
     public void removeFromDestination() {
         if (this.destination != null) {
-            this.destination.removeActivity(this);
+            this.destination.removeActivity(this.getId());
             this.destination = null;
         }
     }
