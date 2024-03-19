@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
  * annotation for integration testing.
  */
 @SpringBootTest
-public class testTravelPackageService {
+public class testTravelPackageServiceImpl {
 
     @InjectMocks
     private TravelPackageService travelPackageService;

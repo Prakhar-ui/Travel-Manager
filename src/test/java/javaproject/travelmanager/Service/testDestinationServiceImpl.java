@@ -1,12 +1,9 @@
 package javaproject.travelmanager.Service;
 
-import javaproject.travelmanager.DTO.ActivityDTO;
 import javaproject.travelmanager.DTO.DestinationDTO;
-import javaproject.travelmanager.Entity.Activity;
 import javaproject.travelmanager.Entity.Destination;
 import javaproject.travelmanager.Repository.ActivityRepository;
 import javaproject.travelmanager.Repository.DestinationRepository;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -25,7 +22,7 @@ import static org.mockito.Mockito.*;
  * such as adding, retrieving, updating, and deleting destinations.
  */
 @SpringBootTest
-public class testDestinationService {
+public class testDestinationServiceImpl {
 
     @InjectMocks
     private DestinationService destinationService;

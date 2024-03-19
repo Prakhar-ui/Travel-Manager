@@ -47,8 +47,14 @@ public class Destination {
      * @param activity The activity to add.
      */
     public void addActivity(Activity activity) {
-        this.activities.add(activity);
-        activity.setDestination(this);
+        Optional<Activity> optionalActivity = this.activities.stream()
+                .filter(newActivity -> newActivity.getId().equals(activity.getId()))
+                .findFirst();
+
+        if (optionalActivity.isEmpty()) {
+            this.activities.add(activity);
+            activity.setDestination(this);
+        }
     }
 
     /**

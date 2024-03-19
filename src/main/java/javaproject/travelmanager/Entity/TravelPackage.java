@@ -58,8 +58,6 @@ public class TravelPackage {
     public TravelPackage(String name, int passengerCapacity) {
         this.name = name;
         this.passengerCapacity = passengerCapacity;
-        this.destinations = new ArrayList<>();
-        this.passengers = new ArrayList<>();
     }
 
     /**
@@ -68,16 +66,22 @@ public class TravelPackage {
      * @param destination The destination to add.
      */
     public void addDestination(Destination destination) {
-        this.destinations.add(destination);
+        Optional<Destination> optionalDestination = this.destinations.stream()
+                .filter(newDestination -> newDestination.getId().equals(destination.getId()))
+                .findFirst();
+
+        if (optionalDestination.isEmpty()) {
+            this.destinations.add(destination);
+        }
     }
 
     /**
-     * Removes a destination from the travel package.
+     * Removes a destination from the travel package by ID.
      *
-     * @param destination The destination to remove.
+     * @param destinationId The ID of the destination to remove.
      */
-    public void removeDestination(Destination destination) {
-        this.destinations.remove(destination);
+    public void removeDestination(Long destinationId) {
+        this.destinations.removeIf(destination -> destination.getId().equals(destinationId));
     }
 
     /**
@@ -86,16 +90,13 @@ public class TravelPackage {
      * @param passenger The passenger to add.
      */
     public void addPassenger(Passenger passenger) {
-        this.passengers.add(passenger);
-    }
+        Optional<Passenger> optionalPassenger = this.passengers.stream()
+                .filter(newPassenger -> newPassenger.getId().equals(passenger.getId()))
+                .findFirst();
 
-    /**
-     * Removes a passenger from the travel package.
-     *
-     * @param passenger The passenger to remove.
-     */
-    public void removePassenger(Passenger passenger) {
-        this.passengers.remove(passenger);
+        if (optionalPassenger.isEmpty()) {
+            this.passengers.add(passenger);
+        }
     }
 
 
@@ -104,55 +105,8 @@ public class TravelPackage {
      *
      * @param passengerId The ID of the passenger to remove.
      */
-    public void removePassengerById(Long passengerId) {
+    public void removePassenger(Long passengerId) {
         this.passengers.removeIf(passenger -> passenger.getId().equals(passengerId));
-    }
-
-    /**
-     * Adds activities to a specific passenger in the travel package.
-     *
-     * @param passengerId The ID of the passenger to whom activities are added.
-     * @param activities  The list of activities to add to the passenger.
-     */
-    public void addActivitiesToPassenger(Long passengerId, List<Activity> activities) {
-            Optional<Passenger> optionalPassenger = passengers.stream()
-                    .filter(passenger -> passenger.getId().equals(passengerId))
-                    .findFirst();
-            optionalPassenger.ifPresent(passenger -> passenger.setActivities(activities));
-
-    }
-
-    /**
-     * Removes a specific activity from a passenger in the travel package.
-     *
-     * @param passengerId The ID of the passenger from whom the activity is removed.
-     * @param activityId  The ID of the activity to remove from the passenger.
-     */
-    public void removeActivityFromPassenger(Long passengerId, Long activityId) {
-        Optional<Passenger> optionalPassenger = passengers.stream()
-                .filter(passenger -> passenger.getId().equals(passengerId))
-                .findFirst();
-        optionalPassenger.ifPresent(passenger -> passenger.removeActivityById(activityId));
-    }
-
-    /**
-     * Adds destinations to the travel package.
-     *
-     * @param destinations The list of destinations to add to the travel package.
-     */
-    public void addDestinations(List<Destination> destinations) {
-            this.destinations.addAll(destinations);
-
-
-    }
-
-    /**
-     * Removes a destination from the travel package by its ID.
-     *
-     * @param destinationId The ID of the destination to remove from the travel package.
-     */
-    public void removeDestinationById(Long destinationId) {
-        this.destinations.removeIf(destination -> destination.getId().equals(destinationId));
     }
 
     /**

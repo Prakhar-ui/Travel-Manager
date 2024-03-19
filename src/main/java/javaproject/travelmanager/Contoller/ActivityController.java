@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controller class for managing activities.
@@ -29,8 +30,8 @@ public class ActivityController {
      * or HTTP status 500 (Internal Server Error) if an error occurs during creation.
      */
     @PostMapping("/add")
-    public ResponseEntity<Activity> addActivity(@RequestBody ActivityDTO activityDTO) {
-        Activity createdActivity = activityService.addActivity(activityDTO);
+    public ResponseEntity<Activity> createActivity(@RequestBody ActivityDTO activityDTO) {
+        Activity createdActivity = activityService.createActivity(activityDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdActivity);
     }
 
@@ -43,12 +44,8 @@ public class ActivityController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Activity> getActivityById(@PathVariable Long id) {
-        Activity activity = activityService.getActivityById(id);
-        if (activity != null) {
-            return ResponseEntity.ok(activity);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Optional<Activity> activity = activityService.getActivity(id);
+        return activity.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     /**
@@ -77,12 +74,9 @@ public class ActivityController {
      */
     @PostMapping("/edit/{id}")
     public ResponseEntity<Activity> updateActivity(@PathVariable Long id, @RequestBody ActivityDTO activityDTO) {
-        Activity updatedActivity = activityService.updateActivity(id, activityDTO);
-        if (updatedActivity != null) {
-            return ResponseEntity.ok(updatedActivity);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Optional<Activity> updatedActivity = activityService.updateActivity(id, activityDTO);
+        return updatedActivity.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+
     }
 
     /**
@@ -94,11 +88,7 @@ public class ActivityController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteActivity(@PathVariable Long id) {
-        boolean deleted = activityService.deleteActivity(id);
-        if (deleted) {
+        activityService.deleteActivity(id);
             return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
     }
 }

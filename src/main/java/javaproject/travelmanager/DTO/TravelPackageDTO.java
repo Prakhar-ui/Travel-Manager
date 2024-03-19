@@ -18,6 +18,6 @@ import java.util.List;
 public class TravelPackageDTO {
     private String name;
     private int passengerCapacity;
-    private List<Long> destinationsId;
-    private List<Long> passengersId;
+    private List<Long> destinationsIds;
+    private List<Long> passengersIds;
 }

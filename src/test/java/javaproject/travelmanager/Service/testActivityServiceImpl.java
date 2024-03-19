@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
  * such as adding, retrieving, updating, and deleting activities.
  */
 @SpringBootTest
-public class testActivityService {
+public class testActivityServiceImpl {
 
     @InjectMocks
     private ActivityService activityService;

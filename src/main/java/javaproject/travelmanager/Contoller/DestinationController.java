@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controller class for managing destinations.
@@ -28,8 +29,8 @@ public class DestinationController {
      * or HTTP status 500 (Internal Server Error) if an error occurs during creation.
      */
     @PostMapping("/add")
-    public ResponseEntity<Destination> addDestination(@RequestBody DestinationDTO destinationDTO) {
-        Destination createdDestination = destinationService.addDestination(destinationDTO);
+    public ResponseEntity<Destination> createDestination(@RequestBody DestinationDTO destinationDTO) {
+        Destination createdDestination = destinationService.createDestination(destinationDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdDestination);
     }
 
@@ -42,12 +43,8 @@ public class DestinationController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Destination> getDestinationById(@PathVariable Long id) {
-        Destination destination = destinationService.getDestinationById(id);
-        if (destination != null) {
-            return ResponseEntity.ok(destination);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Optional<Destination> destination = destinationService.getDestination(id);
+        return destination.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     /**
@@ -76,12 +73,8 @@ public class DestinationController {
      */
     @PostMapping("/edit/{id}")
     public ResponseEntity<Destination> updateDestination(@PathVariable Long id, @RequestBody DestinationDTO destinationDTO) {
-        Destination updatedDestination = destinationService.updateDestination(id, destinationDTO);
-        if (updatedDestination != null) {
-            return ResponseEntity.ok(updatedDestination);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Optional<Destination> updatedDestination = destinationService.updateDestination(id, destinationDTO);
+        return updatedDestination.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     /**
@@ -93,11 +86,7 @@ public class DestinationController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDestination(@PathVariable Long id) {
-        boolean deleted = destinationService.deleteDestination(id);
-        if (deleted) {
+        destinationService.deleteDestination(id);
             return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
     }
 }

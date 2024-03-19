@@ -22,6 +22,6 @@ public class PassengerDTO {
     @Enumerated(EnumType.STRING)
     private PassengerType passengerType;
     private double balance;
-    private List<Long> travelPackagesId;
-    private List<Long> activitiesId;
+    private List<Long> travelPackagesIds;
+    private List<Long> activitiesIds;
 }

@@ -98,7 +98,13 @@ public abstract class Passenger {
      * @param travelPackage The travel package to add.
      */
     public void addTravelPackage(TravelPackage travelPackage) {
-        this.travelPackages.add(travelPackage);
+        Optional<TravelPackage> optionalTravelPackage = this.travelPackages.stream()
+                .filter(newTravelPackage -> newTravelPackage.getId().equals(travelPackage.getId()))
+                .findFirst();
+
+        if (optionalTravelPackage.isEmpty()) {
+            this.travelPackages.add(travelPackage);
+        }
     }
 
     /**

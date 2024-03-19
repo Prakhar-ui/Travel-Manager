@@ -1,114 +1,90 @@
 package javaproject.travelmanager.Service;
 
 import javaproject.travelmanager.DTO.PassengerDTO;
-import javaproject.travelmanager.DTO.TravelPackageDTO;
 import javaproject.travelmanager.Entity.Activity;
 import javaproject.travelmanager.Entity.Passenger;
-import javaproject.travelmanager.Entity.TravelPackage;
-import javaproject.travelmanager.Repository.ActivityRepository;
-import javaproject.travelmanager.Repository.PassengerRepository;
-import javaproject.travelmanager.Repository.TravelPackageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Service class responsible for handling operations related to passengers.
+ * Service interface responsible for handling operations related to passengers.
  */
-@Service
-public class PassengerService {
-
-    @Autowired
-    private PassengerRepository passengerRepository;
-
-    @Autowired
-    private TravelPackageRepository travelPackageRepository;
-
-    @Autowired
-    private ActivityRepository activityRepository;
+public interface PassengerService {
 
     /**
-     * Adds a new passenger.
+     * Creates a new passenger.
      *
      * @param passengerDTO The DTO containing passenger information.
      * @return The newly created passenger.
      */
-    public Passenger addPassenger(PassengerDTO passengerDTO) {
-        Passenger passenger = new Passenger();
-        passenger.setName(passengerDTO.getName());
-        passenger.setPassengerNumber(passengerDTO.getPassengerNumber());
-        passenger.setPassengerType(passengerDTO.getPassengerType());
-        passenger.setBalance(passengerDTO.getBalance());
-        return passengerRepository.save(passenger);
-    }
+    Passenger createPassenger(PassengerDTO passengerDTO);
 
     /**
      * Retrieves a passenger by its ID.
      *
-     * @param id The ID of the passenger to retrieve.
-     * @return The passenger, if found; otherwise, null.
+     * @param passengerId The ID of the passenger to retrieve.
+     * @return The passenger if found, otherwise empty.
      */
-    public Passenger getPassengerById(Long id) {
-        Optional<Passenger> optionalPassenger = passengerRepository.findById(id);
-        return optionalPassenger.orElse(null);
-    }
+    Optional<Passenger> getPassenger(Long passengerId);
 
     /**
      * Retrieves all passengers.
      *
      * @return A list of all passengers.
      */
-    public List<Passenger> getAllPassengers() {
-        return passengerRepository.findAll();
-    }
+    List<Passenger> getAllPassengers();
+
+    List<Activity> getAllActivitiesFromPassenger(Long passengerId);
+
+
 
     /**
      * Updates an existing passenger.
      *
-     * @param id              The ID of the passenger to update.
-     * @param passengerDetails The DTO containing updated passenger information.
-     * @return The updated passenger, if found; otherwise, null.
+     * @param passengerId The ID of the passenger to update.
+     * @param passengerDTO The DTO containing updated passenger information.
+     * @return The updated passenger if found, otherwise empty.
      */
-    public Passenger updatePassenger(Long id, PassengerDTO passengerDetails) {
-        Optional<Passenger> optionalPassenger = passengerRepository.findById(id);
-        if (optionalPassenger.isPresent()) {
-            Passenger existingPassenger = optionalPassenger.get();
-            existingPassenger.setName(passengerDetails.getName());
-            existingPassenger.setPassengerNumber(passengerDetails.getPassengerNumber());
-            existingPassenger.setPassengerType(passengerDetails.getPassengerType());
-            existingPassenger.setBalance(passengerDetails.getBalance());
+    Optional<Passenger> updatePassenger(Long passengerId, PassengerDTO passengerDTO);
 
-            if (passengerDetails.getTravelPackagesId() != null && !passengerDetails.getTravelPackagesId().isEmpty()) {
-                List<TravelPackage> travelPackages = travelPackageRepository.findAllById(passengerDetails.getTravelPackagesId());
-                existingPassenger.setTravelPackages(travelPackages);
-            }
+    /**
+     * Adds an activity to a passenger.
+     *
+     * @param passengerId The ID of the passenger.
+     * @param activityId The ID of the activity to add.
+     */
+    void addActivityToPassenger(Long passengerId, Long activityId);
 
-            if (passengerDetails.getActivitiesId() != null && !passengerDetails.getActivitiesId().isEmpty()) {
-                List<Activity> activities = activityRepository.findAllById(passengerDetails.getActivitiesId());
-                existingPassenger.setActivities(activities);
-            }
+    /**
+     * Removes an activity from a passenger.
+     *
+     * @param passengerId The ID of the passenger.
+     * @param activityId The ID of the activity to remove.
+     */
+    void removeActivityFromPassenger( Long passengerId, Long activityId);
 
-            return passengerRepository.save(existingPassenger);
-        } else {
-            return null;
-        }
-    }
+    /**
+     * Adds an activity to a passenger.
+     *
+     * @param passengerId The ID of the passenger.
+     * @param travelPackageId The ID of the activity to add.
+     */
+    void addTravelPackageToPassenger(Long passengerId, Long travelPackageId);
+
+
+    /**
+     * Removes an activity from a passenger.
+     *
+     * @param passengerId The ID of the passenger.
+     * @param travelPackageId The ID of the activity to remove.
+     */
+    void removeTravelPackageFromPassenger(Long passengerId, Long travelPackageId);
 
     /**
      * Deletes a passenger by its ID.
      *
-     * @param id The ID of the passenger to delete.
-     * @return True if the passenger was deleted successfully; otherwise, false.
+     * @param passengerId The ID of the passenger to delete.
      */
-    public boolean deletePassenger(Long id) {
-        Optional<Passenger> optionalPassenger = passengerRepository.findById(id);
-        if (optionalPassenger.isPresent()) {
-            passengerRepository.deleteById(id);
-            return true;
-        } else {
-            return false;
-        }
-    }
+    void deletePassenger(Long passengerId);
 }

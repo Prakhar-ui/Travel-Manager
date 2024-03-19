@@ -13,5 +13,5 @@ import java.util.List;
 @Setter
 public class DestinationDTO {
     private String name;
-    private List<Long> activitiesID;
+    private List<Long> activitiesIDs;
 }

@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
  * such as adding, retrieving, updating, and deleting passengers.
  */
 @SpringBootTest
-public class testPassengerService {
+public class testPassengerServiceImpl {
 
     @InjectMocks
     private PassengerService passengerService;
