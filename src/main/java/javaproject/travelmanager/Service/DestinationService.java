@@ -53,7 +53,7 @@ public interface DestinationService {
      */
     void deleteDestination(Long destinationId);
 
-    void addActivityToDestination(Long destinationId, Long activityId);
-    void removeActivityFromDestination(Long destinationId,Long activityId);
+    Destination addActivityToDestination(Long destinationId, Long activityId);
+    Destination removeActivityFromDestination(Long destinationId,Long activityId);
 
 }

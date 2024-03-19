@@ -390,29 +390,6 @@ public class TravelPackageController {
         }
     }
 
-    /**
-     * Prints the itinerary of a travel package.
-     *
-     * @param travelPackageId The ID of the travel package.
-     * @return ResponseEntity with HTTP status 200 (OK) and a message indicating the itinerary was printed successfully.
-     */
-    @GetMapping("/{travelPackageId}/print-itinerary")
-    public ResponseEntity<String> printItinerary(@PathVariable Long travelPackageId) {
-        travelPackageService.printItinerary(travelPackageId);
-        return ResponseEntity.ok("Itinerary printed.");
-    }
-
-    /**
-     * Prints the passenger list of a travel package.
-     *
-     * @param travelPackageId The ID of the travel package.
-     * @return ResponseEntity with HTTP status 200 (OK) and a message indicating the passenger list was printed successfully.
-     */
-    @GetMapping("/{travelPackageId}/print-passenger-list")
-    public ResponseEntity<String> printPassengerList(@PathVariable Long travelPackageId) {
-        travelPackageService.printPassengerList(travelPackageId);
-        return ResponseEntity.ok("Passenger List printed.");
-    }
 
     /**
      * Prints the details of passengers in a travel package.

@@ -29,7 +29,7 @@ public class Destination {
      * The list of activities available at the destination.
      */
     @OneToMany(mappedBy = "destination", cascade = CascadeType.ALL)
-    private List<Activity> activities;
+    private List<Activity> activities= new ArrayList<>();
 
     /**
      * Constructs a destination with the given name and an empty list of activities.
@@ -38,7 +38,6 @@ public class Destination {
      */
     public Destination(String name) {
         this.name = name;
-        this.activities = new ArrayList<>();
     }
 
     /**

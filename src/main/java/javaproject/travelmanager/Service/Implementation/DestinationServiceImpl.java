@@ -88,7 +88,7 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
     @Override
-    public void addActivityToDestination(@NotNull Long destinationId, @NotNull Long activityId) {
+    public Destination addActivityToDestination(@NotNull Long destinationId, @NotNull Long activityId) {
         Optional<Destination> destinationOptional = destinationRepository.findById(destinationId);
         Destination destination = destinationOptional.orElseThrow(() -> new IllegalArgumentException("Destination with ID " + destinationId + " not found."));
 
@@ -96,6 +96,8 @@ public class DestinationServiceImpl implements DestinationService {
         Activity activityToAdd = activity.orElseThrow(() -> new IllegalArgumentException("Activity with ID " + activityId + " not found."));
 
         destination.addActivity(activityToAdd);
+
+        return destinationRepository.save(destination);
     }
 
     /**
@@ -106,7 +108,7 @@ public class DestinationServiceImpl implements DestinationService {
      * @throws IllegalArgumentException if the destination or activity is not found.
      */
     @Override
-    public void removeActivityFromDestination(@NotNull Long destinationId, @NotNull Long activityId) {
+    public Destination removeActivityFromDestination(@NotNull Long destinationId, @NotNull Long activityId) {
         Optional<Destination> destinationOptional = destinationRepository.findById(destinationId);
         Destination destination = destinationOptional.orElseThrow(() -> new IllegalArgumentException("Destination with ID " + destinationId + " not found."));
 
@@ -114,6 +116,8 @@ public class DestinationServiceImpl implements DestinationService {
         Activity activityToRemove = activity.orElseThrow(() -> new IllegalArgumentException("Activity with ID " + activityId + " not found."));
 
         destination.removeActivity(activityId);
+
+        return destinationRepository.save(destination);
     }
 
 

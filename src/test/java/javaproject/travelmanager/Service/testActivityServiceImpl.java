@@ -5,6 +5,7 @@ import javaproject.travelmanager.Entity.Activity;
 import javaproject.travelmanager.Entity.Destination;
 import javaproject.travelmanager.Repository.ActivityRepository;
 import javaproject.travelmanager.Repository.DestinationRepository;
+import javaproject.travelmanager.Service.Implementation.ActivityServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -27,7 +28,7 @@ import static org.mockito.Mockito.*;
 public class testActivityServiceImpl {
 
     @InjectMocks
-    private ActivityService activityService;
+    private ActivityServiceImpl activityService;
 
     @Mock
     private ActivityRepository activityRepository;
@@ -48,7 +49,7 @@ public class testActivityServiceImpl {
 
         when(activityRepository.save(any())).thenReturn(new Activity(activityDTO.getName(),activityDTO.getDescription(),activityDTO.getCost(),activityDTO.getCapacity()));
 
-        Activity savedActivity = activityService.addActivity(activityDTO);
+        Activity savedActivity = activityService.createActivity(activityDTO);
 
         assertNotNull(savedActivity);
         assertEquals("Test Activity", savedActivity.getName());
@@ -61,8 +62,9 @@ public class testActivityServiceImpl {
     void testGetActivityById() {
         Long id = 1L;
         when(activityRepository.findById(id)).thenReturn(Optional.of(new Activity()));
+        when(activityRepository.existsById(id)).thenReturn(true);
 
-        Activity activity = activityService.getActivityById(id);
+        Optional<Activity> activity = activityService.getActivity(id);
 
         assertNotNull(activity);
     }
@@ -86,27 +88,35 @@ public class testActivityServiceImpl {
         Long id = 1L;
         ActivityDTO activityDTO = new ActivityDTO();
         activityDTO.setName("Updated Activity");
+        activityDTO.setDescription("Test Description");
+        activityDTO.setCost(50.0);
+        activityDTO.setCapacity(10);
 
         Activity existingActivity = new Activity();
         existingActivity.setId(id);
 
         when(activityRepository.findById(id)).thenReturn(Optional.of(existingActivity));
-        when(activityRepository.save(any())).thenReturn(existingActivity);
+        when(activityRepository.existsById(id)).thenReturn(true);
+        when(activityRepository.save(any(Activity.class))).thenReturn(existingActivity);
 
-        Activity updatedActivity = activityService.updateActivity(id, activityDTO);
+
+        Optional<Activity> updatedActivity = activityService.updateActivity(id, activityDTO);
 
         assertNotNull(updatedActivity);
-        assertEquals("Updated Activity", updatedActivity.getName());
+        assertEquals("Updated Activity", updatedActivity.get().getName());
+        assertEquals("Test Description", updatedActivity.get().getDescription());
+        assertEquals(50.0, updatedActivity.get().getCost());
+        assertEquals(10, updatedActivity.get().getCapacity());
     }
 
     @Test
     void testDeleteActivity() {
         Long id = 1L;
         when(activityRepository.findById(id)).thenReturn(Optional.of(new Activity()));
+        when(activityRepository.existsById(id)).thenReturn(true);
 
-        boolean result = activityService.deleteActivity(id);
+        activityService.deleteActivity(id);
 
-        assertTrue(result);
         verify(activityRepository, times(1)).deleteById(id);
     }
 }

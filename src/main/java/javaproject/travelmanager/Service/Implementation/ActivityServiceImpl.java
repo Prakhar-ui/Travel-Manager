@@ -96,6 +96,7 @@ public class ActivityServiceImpl implements ActivityService {
         if (!activityRepository.existsById(id)) {
             throw new IllegalArgumentException("Activity with ID " + id + " not found.");
         }
+
         return activityRepository.findById(id).map(existingActivity -> {
             existingActivity.setName(activityDTO.getName());
             existingActivity.setDescription(activityDTO.getDescription());
@@ -107,7 +108,7 @@ public class ActivityServiceImpl implements ActivityService {
                         .orElseThrow(() -> new IllegalArgumentException("Destination with ID " + activityDTO.getDestinationId() + " not found."));
                 existingActivity.setDestination(destination);
             }
-
+            System.out.println(activityRepository.save(existingActivity));
             return activityRepository.save(existingActivity);
         });
     }

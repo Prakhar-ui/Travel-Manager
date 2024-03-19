@@ -1,8 +1,13 @@
 package javaproject.travelmanager.Entity;
 
+import jakarta.persistence.Entity;
+import lombok.NoArgsConstructor;
+
 /**
  * Entity class representing a Gold passenger.
  */
+@Entity
+@NoArgsConstructor
 public class GoldPassenger extends Passenger {
 
     public GoldPassenger(String name, String passengerNumber, PassengerType passengerType, double balance) {

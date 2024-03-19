@@ -60,9 +60,9 @@ public class DataLoader implements CommandLineRunner {
         destinationRepository.saveAll(Arrays.asList(destination1, destination2, destination3));
 
         // Create sample passengers
-        Passenger passenger1 = new Passenger("Rahul", "1234567890", PassengerType.STANDARD, 50000.0);
-        Passenger passenger2 = new Passenger("Sonia", "9876543210",  PassengerType.GOLD, 10000.0);
-        Passenger passenger3 = new Passenger("Amit", "5678901234",  PassengerType.PREMIUM, 20000.0);
+        Passenger passenger1 = new StandardPassenger("Rahul", "1234567890", PassengerType.STANDARD, 50000.0);
+        Passenger passenger2 = new GoldPassenger("Sonia", "9876543210",  PassengerType.GOLD, 10000.0);
+        Passenger passenger3 = new PremiumPassenger("Amit", "5678901234",  PassengerType.PREMIUM);
 
 
         passengerRepository.saveAll(Arrays.asList(passenger1, passenger2, passenger3));
@@ -92,19 +92,33 @@ public class DataLoader implements CommandLineRunner {
 
         for (Passenger passenger: passengers){
             if (passenger.getName() == passenger1.getName()){
-                passenger.addActivity(activity1);
-                passenger.addActivity(activity2);
+                passenger.signUpForActivity(activity1);
+                passenger.signUpForActivity(activity2);
             } else if (passenger.getName() == passenger2.getName()){
-                passenger.addActivity(activity3);
-                passenger.addActivity(activity4);
+                passenger.signUpForActivity(activity3);
+                passenger.signUpForActivity(activity4);
             } else {
-                passenger.addActivity(activity5);
-                passenger.addActivity(activity6);
+                passenger.signUpForActivity(activity5);
+                passenger.signUpForActivity(activity6);
             }
         }
         package1.setPassengers(passengers);
 
         passengerRepository.saveAll(Arrays.asList(passenger1, passenger2, passenger3));
+
+        System.out.println("----------------------------------------------------");
+        System.out.println("Itinerary - ");
+        package1.printItinerary();
+        System.out.println("----------------------------------------------------");
+        System.out.println("Available activities - ");
+        package1.printAvailableActivities();
+        System.out.println("----------------------------------------------------");
+        System.out.println("Passenger List - ");
+        package1.printPassengerList();
+        System.out.println("----------------------------------------------------");
+        System.out.println("Passenger Details - ");
+        package1.printPassengerDetails();
+        System.out.println("----------------------------------------------------");
 
     }
 }

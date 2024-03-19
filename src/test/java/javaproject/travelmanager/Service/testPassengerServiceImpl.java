@@ -8,6 +8,7 @@ import javaproject.travelmanager.Repository.ActivityRepository;
 import javaproject.travelmanager.Repository.DestinationRepository;
 import javaproject.travelmanager.Repository.PassengerRepository;
 import javaproject.travelmanager.Repository.TravelPackageRepository;
+import javaproject.travelmanager.Service.Implementation.PassengerServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -31,7 +32,7 @@ import static org.mockito.Mockito.*;
 public class testPassengerServiceImpl {
 
     @InjectMocks
-    private PassengerService passengerService;
+    private PassengerServiceImpl passengerService;
 
     @Mock
     private PassengerRepository passengerRepository;
@@ -50,9 +51,9 @@ public class testPassengerServiceImpl {
         passengerDTO.setPassengerType(PassengerType.STANDARD);
         passengerDTO.setBalance(2000);
 
-        when(passengerRepository.save(any())).thenReturn(new Passenger(passengerDTO.getName(),passengerDTO.getPassengerNumber(),passengerDTO.getPassengerType(),passengerDTO.getBalance()));
+        when(passengerRepository.save(any())).thenReturn(new StandardPassenger(passengerDTO.getName(),passengerDTO.getPassengerNumber(),passengerDTO.getPassengerType(),passengerDTO.getBalance()));
 
-        Passenger savedPassenger = passengerService.addPassenger(passengerDTO);
+        Passenger savedPassenger = passengerService.createPassenger(passengerDTO);
 
         assertNotNull(savedPassenger);
         assertEquals("Test Passenger", savedPassenger.getName());
@@ -65,18 +66,27 @@ public class testPassengerServiceImpl {
     @Test
     void testGetPassengerById() {
         Long id = 1L;
-        when(passengerRepository.findById(id)).thenReturn(Optional.of(new Passenger()));
+        Passenger newPassenger = new StandardPassenger("Test Passenger","12345",PassengerType.STANDARD,2000);
+        newPassenger.setId(id);
+        when(passengerRepository.findById(id)).thenReturn(Optional.of(newPassenger));
 
-        Passenger passenger = passengerService.getPassengerById(id);
+        Optional<Passenger> passenger = passengerService.getPassenger(id);
 
         assertNotNull(passenger);
+        assertEquals("Test Passenger", passenger.get().getName());
+        assertEquals("12345", passenger.get().getPassengerNumber());
+        assertEquals(PassengerType.STANDARD, passenger.get().getPassengerType());
+        assertEquals(2000, passenger.get().getBalance());
     }
 
     @Test
     void testGetAllPassengers() {
         List<Passenger> passengerList = new ArrayList<>();
-        passengerList.add(new Passenger());
-        passengerList.add(new Passenger());
+        Passenger newPassenger1 = new StandardPassenger("Test Passenger","12345",PassengerType.STANDARD,2000);
+        Passenger newPassenger2 = new StandardPassenger("Test Passenger2","123456",PassengerType.GOLD,10000);
+
+        passengerList.add(newPassenger1);
+        passengerList.add(newPassenger2);
 
         when(passengerRepository.findAll()).thenReturn(passengerList);
 
@@ -100,7 +110,7 @@ public class testPassengerServiceImpl {
         activityIds.add(1L); // Assuming there is an activity with ID 1
 
         // Mock optional passenger
-        Passenger existingPassenger = new Passenger();
+        Passenger existingPassenger = new StandardPassenger("Test Passenger2","123456",PassengerType.GOLD,10000);
         existingPassenger.setId(passengerId);
 
         // Mock travel packages and activities
@@ -120,15 +130,15 @@ public class testPassengerServiceImpl {
         when(passengerRepository.save(existingPassenger)).thenReturn(existingPassenger);
 
         // Call the method to be tested
-        Passenger updatedPassenger = passengerService.updatePassenger(passengerId, passengerDTO);
+        Optional<Passenger> updatedPassenger = passengerService.updatePassenger(passengerId, passengerDTO);
 
         // Assertions
         assertNotNull(updatedPassenger);
-        assertEquals(passengerId, updatedPassenger.getId());
-        assertEquals("Updated Name", updatedPassenger.getName());
-        assertEquals("54321", updatedPassenger.getPassengerNumber());
-        assertEquals(PassengerType.valueOf("STANDARD"), updatedPassenger.getPassengerType());
-        assertEquals(1000.0, updatedPassenger.getBalance());
+        assertEquals(passengerId, updatedPassenger.get().getId());
+        assertEquals("Updated Name", updatedPassenger.get().getName());
+        assertEquals("54321", updatedPassenger.get().getPassengerNumber());
+        assertEquals(PassengerType.valueOf("STANDARD"), updatedPassenger.get().getPassengerType());
+        assertEquals(1000.0, updatedPassenger.get().getBalance());
     }
 
 
@@ -138,18 +148,60 @@ void testDeletePassenger() {
     Long passengerId = 1L;
 
     // Mock optional passenger
-    Passenger existingPassenger = new Passenger();
+    Passenger existingPassenger = new StandardPassenger("Test Passenger2","123456",PassengerType.GOLD,10000);
     existingPassenger.setId(passengerId);
 
     // Mock repository call
     when(passengerRepository.findById(passengerId)).thenReturn(Optional.of(existingPassenger));
+    when(passengerRepository.existsById(passengerId)).thenReturn(true);
 
     // Call the method to be tested
-    boolean result = passengerService.deletePassenger(passengerId);
+    passengerService.deletePassenger(passengerId);
 
     // Assertions
-    assertTrue(result);
     verify(passengerRepository, times(1)).deleteById(passengerId);
 }
+
+    @Test
+    void testAddActivityToPassenger() {
+        Long passengerId = 1L;
+        Long activityId = 1L;
+
+        Passenger mockPassenger = new StandardPassenger("Test Passenger2","123456",PassengerType.GOLD,10000);
+        Activity mockActivity = new Activity();
+        mockPassenger.signUpForActivity(mockActivity);
+
+
+        when(activityRepository.findById(activityId)).thenReturn(Optional.of(mockActivity));
+        when(passengerRepository.findById(passengerId)).thenReturn(Optional.of(mockPassenger));
+        when(passengerRepository.save(any())).thenReturn(mockPassenger);
+
+        Passenger result = passengerService.addActivityToPassenger( passengerId, activityId);
+
+        assertNotNull(result);
+        assertTrue(mockPassenger.getActivities().contains(mockActivity));
+    }
+    @Test
+    void testRemoveActivityFromPassenger() {
+        Long passengerId = 1L;
+        Long activityId = 1L;
+
+        Passenger mockPassenger = new StandardPassenger("Test Passenger2","123456",PassengerType.GOLD,10000);
+        Activity mockActivity = new Activity();
+        mockActivity.setId(activityId);
+        mockPassenger.signUpForActivity(mockActivity);
+
+        when(activityRepository.findById(activityId)).thenReturn(Optional.of(mockActivity));
+        when(passengerRepository.findById(passengerId)).thenReturn(Optional.of(mockPassenger));
+        mockPassenger.removeActivity(activityId);
+        when(passengerRepository.save(any())).thenReturn(mockPassenger);
+
+
+        Passenger result = passengerService.removeActivityFromPassenger( passengerId, activityId);
+
+        assertNotNull(result);
+        assertFalse(result.getActivities().contains(mockActivity));
+        verify(passengerRepository, times(1)).save(mockPassenger);
+    }
 }
 

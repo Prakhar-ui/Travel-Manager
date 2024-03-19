@@ -169,12 +169,13 @@ public class TravelPackageServiceImpl implements TravelPackageService {
      * @throws IllegalArgumentException if the provided travel package ID or destination ID is null, or if the travel package or destination with the given IDs does not exist.
      */
     @Override
-    public void addDestinationToTravelPackage(@Valid @NotNull Long travelPackageId, @Valid @NotNull Long destinationId) {
+    public TravelPackage addDestinationToTravelPackage(@Valid @NotNull Long travelPackageId, @Valid @NotNull Long destinationId) {
         TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
                 .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
         Destination destination = destinationRepository.findById(destinationId)
                 .orElseThrow(() -> new IllegalArgumentException("Destination with ID " + destinationId + " not found."));
         travelPackage.addDestination(destination);
+        return travelPackageRepository.save(travelPackage);
     }
 
     /**
@@ -185,12 +186,13 @@ public class TravelPackageServiceImpl implements TravelPackageService {
      * @throws IllegalArgumentException if the provided travel package ID or destination ID is null, or if the travel package or destination with the given IDs does not exist.
      */
     @Override
-    public void removeDestinationFromTravelPackage(@Valid @NotNull Long travelPackageId, @Valid @NotNull Long destinationId) {
+    public TravelPackage removeDestinationFromTravelPackage(@Valid @NotNull Long travelPackageId, @Valid @NotNull Long destinationId) {
         TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
                 .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
         Destination destination = destinationRepository.findById(destinationId)
                 .orElseThrow(() -> new IllegalArgumentException("Destination with ID " + destinationId + " not found."));
         travelPackage.removeDestination(destinationId);
+        return travelPackageRepository.save(travelPackage);
     }
 
     /**
@@ -198,7 +200,7 @@ public class TravelPackageServiceImpl implements TravelPackageService {
      *
      * @param travelPackageId The ID of the travel package.
      * @param passengerId     The ID of the passenger to add.
-     * @return
+     * @return TravelPackage
      * @throws IllegalArgumentException if the provided travel package ID or passenger ID is null, or if the travel package or passenger with the given IDs does not exist.
      */
     @Override
@@ -208,7 +210,7 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         Passenger passenger = passengerRepository.findById(passengerId)
                 .orElseThrow(() -> new IllegalArgumentException("Passenger with ID " + passengerId + " not found."));
         travelPackage.addPassenger(passenger);
-        return travelPackage;
+        return travelPackageRepository.save(travelPackage);
     }
 
     /**
@@ -219,12 +221,13 @@ public class TravelPackageServiceImpl implements TravelPackageService {
      * @throws IllegalArgumentException if the provided travel package ID or passenger ID is null, or if the travel package or passenger with the given IDs does not exist.
      */
     @Override
-    public void removePassengerFromTravelPackage(@Valid @NotNull Long travelPackageId,@Valid @NotNull  Long passengerId) {
+    public TravelPackage removePassengerFromTravelPackage(@Valid @NotNull Long travelPackageId,@Valid @NotNull  Long passengerId) {
         TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
                 .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
         Passenger passenger = passengerRepository.findById(passengerId)
                 .orElseThrow(() -> new IllegalArgumentException("Passenger with ID " + passengerId + " not found."));
         travelPackage.removePassenger(passengerId);
+        return travelPackageRepository.save(travelPackage);
     }
 
     /**
@@ -239,5 +242,33 @@ public class TravelPackageServiceImpl implements TravelPackageService {
             throw new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found.");
         }
         travelPackageRepository.deleteById(travelPackageId);
+    }
+
+    @Override
+    public void printItinerary(Long travelPackageId) {
+        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
+                .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
+        travelPackage.printItinerary();
+    }
+
+    @Override
+    public void printPassengerList(Long travelPackageId) {
+        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
+                .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
+        travelPackage.printPassengerList();
+    }
+
+    @Override
+    public void printPassengerDetails(Long travelPackageId) {
+        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
+                .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
+        travelPackage.printPassengerDetails();
+    }
+
+    @Override
+    public void printAvailableActivities(Long travelPackageId) {
+        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
+                .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
+        travelPackage.printAvailableActivities();
     }
 }

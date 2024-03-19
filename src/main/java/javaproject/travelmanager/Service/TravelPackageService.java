@@ -55,7 +55,7 @@ public interface TravelPackageService {
      * @param travelPackageId The ID of the travel package.
      * @param destinationId   The ID of the destination to add.
      */
-    void addDestinationToTravelPackage(Long travelPackageId, Long destinationId);
+    TravelPackage addDestinationToTravelPackage(Long travelPackageId, Long destinationId);
 
     /**
      * Removes a destination from a travel package.
@@ -63,7 +63,7 @@ public interface TravelPackageService {
      * @param travelPackageId The ID of the travel package.
      * @param destinationId   The ID of the destination to remove.
      */
-    void removeDestinationFromTravelPackage(Long travelPackageId, Long destinationId);
+    TravelPackage removeDestinationFromTravelPackage(Long travelPackageId, Long destinationId);
 
 
     /**
@@ -81,7 +81,7 @@ public interface TravelPackageService {
      * @param travelPackageId The ID of the travel package.
      * @param passengerId     The ID of the passenger to remove.
      */
-    void removePassengerFromTravelPackage(Long travelPackageId, Long passengerId);
+    TravelPackage removePassengerFromTravelPackage(Long travelPackageId, Long passengerId);
 
     /**
      * Deletes a travel package by its ID.

@@ -155,7 +155,7 @@ public class PassengerServiceImpl implements PassengerService {
      */
 
     @Override
-    public void addActivityToPassenger(@Valid @NotNull Long passengerId, @Valid @NotNull Long activityId) {
+    public Passenger addActivityToPassenger(@Valid @NotNull Long passengerId, @Valid @NotNull Long activityId) {
         Passenger passenger = passengerRepository.findById(passengerId)
                 .orElseThrow(() -> new IllegalArgumentException("Passenger with ID " + passengerId + " not found."));
 
@@ -163,10 +163,12 @@ public class PassengerServiceImpl implements PassengerService {
                 .orElseThrow(() -> new IllegalArgumentException("Activity with ID " + activityId + " not found."));
 
         passenger.signUpForActivity(activity);
+
+        return passengerRepository.save(passenger);
     }
 
     @Override
-    public void removeActivityFromPassenger( @Valid @NotNull Long passengerId, @Valid @NotNull Long activityId) {
+    public Passenger removeActivityFromPassenger( @Valid @NotNull Long passengerId, @Valid @NotNull Long activityId) {
         Passenger passenger = passengerRepository.findById(passengerId)
                 .orElseThrow(() -> new IllegalArgumentException("Passenger with ID " + passengerId + " not found."));
 
@@ -174,6 +176,8 @@ public class PassengerServiceImpl implements PassengerService {
                 .orElseThrow(() -> new IllegalArgumentException("Activity with ID " + activityId + " not found."));
 
         passenger.removeActivity(activityId);
+
+        return passengerRepository.save(passenger);
     }
 
 
@@ -186,7 +190,7 @@ public class PassengerServiceImpl implements PassengerService {
      * @throws IllegalArgumentException if any of the activities with the given IDs are not found.
      */
     @Override
-    public void addTravelPackageToPassenger(@Valid @NotNull Long passengerId, @Valid @NotNull Long travelPackageId) {
+    public Passenger addTravelPackageToPassenger(@Valid @NotNull Long passengerId, @Valid @NotNull Long travelPackageId) {
 
         Passenger passenger = passengerRepository.findById(passengerId)
                 .orElseThrow(() -> new IllegalArgumentException("Passenger with ID " + passengerId + " not found."));
@@ -195,11 +199,13 @@ public class PassengerServiceImpl implements PassengerService {
                 .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
 
         passenger.addTravelPackage(travelPackage);
+
+        return passengerRepository.save(passenger);
     }
 
 
     @Override
-    public void removeTravelPackageFromPassenger(@Valid @NotNull Long passengerId, @Valid @NotNull Long travelPackageId){
+    public Passenger removeTravelPackageFromPassenger(@Valid @NotNull Long passengerId, @Valid @NotNull Long travelPackageId){
 
         Passenger passenger = passengerRepository.findById(passengerId)
                 .orElseThrow(() -> new IllegalArgumentException("Passenger with ID " + passengerId + " not found."));
@@ -208,6 +214,8 @@ public class PassengerServiceImpl implements PassengerService {
                 .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
 
         passenger.removeTravelPackage(travelPackageId);
+
+        return passengerRepository.save(passenger);
     }
 
 

@@ -1,8 +1,13 @@
 package javaproject.travelmanager.Entity;
 
+import jakarta.persistence.Entity;
+import lombok.NoArgsConstructor;
+
 /**
  * Entity class representing a Premium passenger.
  */
+@Entity
+@NoArgsConstructor
 public class PremiumPassenger extends Passenger {
 
     public PremiumPassenger(String name, String passengerNumber, PassengerType passengerType) {

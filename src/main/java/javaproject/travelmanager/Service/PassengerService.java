@@ -54,7 +54,7 @@ public interface PassengerService {
      * @param passengerId The ID of the passenger.
      * @param activityId The ID of the activity to add.
      */
-    void addActivityToPassenger(Long passengerId, Long activityId);
+    Passenger addActivityToPassenger(Long passengerId, Long activityId);
 
     /**
      * Removes an activity from a passenger.
@@ -62,7 +62,7 @@ public interface PassengerService {
      * @param passengerId The ID of the passenger.
      * @param activityId The ID of the activity to remove.
      */
-    void removeActivityFromPassenger( Long passengerId, Long activityId);
+    Passenger removeActivityFromPassenger( Long passengerId, Long activityId);
 
     /**
      * Adds an activity to a passenger.
@@ -70,7 +70,7 @@ public interface PassengerService {
      * @param passengerId The ID of the passenger.
      * @param travelPackageId The ID of the activity to add.
      */
-    void addTravelPackageToPassenger(Long passengerId, Long travelPackageId);
+    Passenger addTravelPackageToPassenger(Long passengerId, Long travelPackageId);
 
 
     /**
@@ -79,7 +79,7 @@ public interface PassengerService {
      * @param passengerId The ID of the passenger.
      * @param travelPackageId The ID of the activity to remove.
      */
-    void removeTravelPackageFromPassenger(Long passengerId, Long travelPackageId);
+    Passenger removeTravelPackageFromPassenger(Long passengerId, Long travelPackageId);
 
     /**
      * Deletes a passenger by its ID.
