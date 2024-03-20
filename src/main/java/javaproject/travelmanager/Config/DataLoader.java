@@ -1,31 +1,39 @@
 package javaproject.travelmanager.Config;
 
 
+import javaproject.travelmanager.DTO.*;
 import javaproject.travelmanager.Entity.*;
 import javaproject.travelmanager.Repository.*;
+import javaproject.travelmanager.Service.*;
+import javaproject.travelmanager.Service.Implementation.TravelPackageServiceImpl;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 @Component
 public class DataLoader implements CommandLineRunner {
-    private final TravelPackageRepository travelPackageRepository;
-    private final DestinationRepository destinationRepository;
-    private final ActivityRepository activityRepository;
-    private final PassengerRepository passengerRepository;
+    private final TravelPackageService travelPackageService;
+    private final DestinationService destinationService;
+    private final ActivityService activityService;
+    private final PassengerService passengerService;
 
-    public DataLoader(TravelPackageRepository travelPackageRepository,
-                      DestinationRepository destinationRepository,
-                      ActivityRepository activityRepository,
-                      PassengerRepository passengerRepository) {
-        this.travelPackageRepository = travelPackageRepository;
-        this.destinationRepository = destinationRepository;
-        this.activityRepository = activityRepository;
-        this.passengerRepository = passengerRepository;
+    private final TravelPackagePrintService travelPackagePrintService;
+
+    public DataLoader(TravelPackageService travelPackageService,
+                      DestinationService destinationService,
+                      ActivityService activityService,
+                      PassengerService passengerService,
+                      TravelPackagePrintService travelPackagePrintService) {
+        this.travelPackageService = travelPackageService;
+        this.destinationService = destinationService;
+        this.activityService = activityService;
+        this.passengerService = passengerService;
+        this.travelPackagePrintService = travelPackagePrintService;
     }
 
     @Override
@@ -33,91 +41,133 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         // Create sample destinations
-        Destination destination1 = new Destination("Goa");
-        Destination destination2 = new Destination("Jaipur");
-        Destination destination3 = new Destination("Kerala");
+        DestinationDTO destination1 = new DestinationDTO();
+        DestinationDTO destination2 = new DestinationDTO();
+        DestinationDTO destination3 = new DestinationDTO();
+        destination1.setName("Goa");
+        destination2.setName("Jaipur");
+        destination3.setName("Kerala");
 
-        destinationRepository.saveAll(Arrays.asList(destination1, destination2, destination3));
+        Destination savedDestination1 = destinationService.createDestination(destination1);
+        Destination savedDestination2 = destinationService.createDestination(destination2);
+        Destination savedDestination3 = destinationService.createDestination(destination3);
 
         // Create sample activities
-        Activity activity1 = new Activity("Beach Party", "Enjoy beach party", 2000.0, 10);
-        Activity activity2 = new Activity("Scuba Diving", "Explore underwater world", 5000.0, 4);
-        Activity activity3 = new Activity("City Tour", "Explore historical monuments", 1500.0, 5);
-        Activity activity4 = new Activity("Puppet Show", "Enjoy puppet show", 1000.0, 7);
-        Activity activity5 = new Activity("Backwater Cruise", "Experience backwater cruise", 4000.0, 3);
-        Activity activity6 = new Activity("Ayurvedic Massage", "Relax with ayurvedic massage", 2000.0, 5);
+        ActivityDTO activity1 = new ActivityDTO();
+        activity1.setName("Beach Party");
+        activity1.setDescription("Enjoy beach party");
+        activity1.setCost(2000.0);
+        activity1.setCapacity(10);
+        ActivityDTO activity2 = new ActivityDTO();
+        activity2.setName("Scuba Diving");
+        activity2.setDescription("Explore underwater world");
+        activity2.setCost(5000.0);
+        activity2.setCapacity(4);
+        ActivityDTO activity3 = new ActivityDTO();
+        activity3.setName("City Tour");
+        activity3.setDescription("Explore historical monuments");
+        activity3.setCost(1500.0);
+        activity3.setCapacity(5);
 
-        activityRepository.saveAll(Arrays.asList(activity1, activity2, activity3, activity4, activity5, activity6));
+        ActivityDTO activity4 = new ActivityDTO();
+        activity4.setName("Puppet Show");
+        activity4.setDescription("Enjoy puppet show");
+        activity4.setCost(1000.0);
+        activity4.setCapacity(7);
+
+        ActivityDTO activity5 = new ActivityDTO();
+        activity5.setName("Backwater Cruise");
+        activity5.setDescription("Experience backwater cruise");
+        activity5.setCost(4000.0);
+        activity5.setCapacity(3);
+
+        ActivityDTO activity6 = new ActivityDTO();
+        activity6.setName("Ayurvedic Massage");
+        activity6.setDescription("Relax with ayurvedic massage");
+        activity6.setCost(2000.0);
+        activity6.setCapacity(5);
+
+
+
+
+        Activity savedActivity1 = activityService.createActivity(activity1);
+        Activity savedActivity2 = activityService.createActivity(activity2);
+        Activity savedActivity3 = activityService.createActivity(activity3);
+        Activity savedActivity4 = activityService.createActivity(activity4);
+        Activity savedActivity5 = activityService.createActivity(activity5);
+        Activity savedActivity6 = activityService.createActivity(activity6);
 
         // Fetch destinations from the database
-        destination1.addActivity(activity1);
-        destination1.addActivity(activity2);
-        destination2.addActivity(activity3);
-        destination2.addActivity(activity4);
-        destination3.addActivity(activity5);
-        destination3.addActivity(activity6);
+        savedDestination1 = destinationService.addActivityToDestination(savedDestination1.getId(),savedActivity1.getId());
+        savedDestination1 = destinationService.addActivityToDestination(savedDestination1.getId(),savedActivity2.getId());
+        savedDestination2 = destinationService.addActivityToDestination(savedDestination2.getId(),savedActivity3.getId());
+        savedDestination2 = destinationService.addActivityToDestination(savedDestination2.getId(),savedActivity4.getId());
+        savedDestination3 = destinationService.addActivityToDestination(savedDestination3.getId(),savedActivity5.getId());
+        savedDestination3 = destinationService.addActivityToDestination(savedDestination3.getId(),savedActivity6.getId());
 
-        destinationRepository.saveAll(Arrays.asList(destination1, destination2, destination3));
 
         // Create sample passengers
-        Passenger passenger1 = new StandardPassenger("Rahul", "1234567890", PassengerType.STANDARD, 50000.0);
-        Passenger passenger2 = new GoldPassenger("Sonia", "9876543210",  PassengerType.GOLD, 10000.0);
-        Passenger passenger3 = new PremiumPassenger("Amit", "5678901234",  PassengerType.PREMIUM);
+        PassengerDTO passenger1 = new PassengerDTO();
+        passenger1.setName("Rahul");
+        passenger1.setPassengerNumber("1234567890");
+        passenger1.setPassengerType(PassengerType.STANDARD);
+        passenger1.setBalance(50000.0);
+        PassengerDTO passenger2 = new PassengerDTO();
+        passenger2.setName("Sonia");
+        passenger2.setPassengerNumber("9876543210");
+        passenger2.setPassengerType(PassengerType.GOLD);
+        passenger2.setBalance(50000.0);
+        PassengerDTO passenger3 = new PassengerDTO();
+        passenger3.setName("Amit");
+        passenger3.setPassengerNumber("5678901234");
+        passenger3.setPassengerType(PassengerType.PREMIUM);
+        passenger2.setBalance(0);
 
 
-        passengerRepository.saveAll(Arrays.asList(passenger1, passenger2, passenger3));
+        Passenger savedPassenger1 = passengerService.createPassenger(passenger1);
+        Passenger savedPassenger2 = passengerService.createPassenger(passenger2);
+        Passenger savedPassenger3 = passengerService.createPassenger(passenger3);
 
         // Create sample travel packages
-        TravelPackage package1 = new TravelPackage("Trip 1", 3);
+        TravelPackageDTO package1 = new TravelPackageDTO();
+        package1.setName("Trip 1");
+        package1.setPassengerCapacity(3);
 
-        travelPackageRepository.save(package1);
+        TravelPackage savedTravelPackage = travelPackageService.createTravelPackage(package1);
 
-        package1.addPassenger(passenger1);
-        package1.addPassenger(passenger2);
-        package1.addPassenger(passenger3);
+        savedTravelPackage = travelPackageService.addDestinationToTravelPackage(savedTravelPackage.getId(),savedDestination1.getId());
+        savedTravelPackage = travelPackageService.addDestinationToTravelPackage(savedTravelPackage.getId(),savedDestination2.getId());
+        savedTravelPackage = travelPackageService.addDestinationToTravelPackage(savedTravelPackage.getId(),savedDestination3.getId());
 
-        package1.addDestination(destination1);
-        package1.addDestination(destination2);
-        package1.addDestination(destination3);
+        savedTravelPackage = travelPackageService.addPassengerToTravelPackage(savedTravelPackage.getId(),savedPassenger1.getId());
+        savedTravelPackage = travelPackageService.addPassengerToTravelPackage(savedTravelPackage.getId(),savedPassenger2.getId());
+        savedTravelPackage = travelPackageService.addPassengerToTravelPackage(savedTravelPackage.getId(),savedPassenger3.getId());
 
-        passenger1.addTravelPackage(package1);
-        passenger2.addTravelPackage(package1);
-        passenger3.addTravelPackage(package1);
+        savedPassenger1 = passengerService.addTravelPackageToPassenger(savedPassenger1.getId(),savedTravelPackage.getId());
+        savedPassenger2 = passengerService.addTravelPackageToPassenger(savedPassenger2.getId(),savedTravelPackage.getId());
+        savedPassenger3 = passengerService.addTravelPackageToPassenger(savedPassenger3.getId(),savedTravelPackage.getId());
 
-        travelPackageRepository.save(package1);
+        savedPassenger1 = passengerService.addActivityToPassenger(savedPassenger1.getId(),savedActivity1.getId());
+        savedPassenger1 = passengerService.addActivityToPassenger(savedPassenger1.getId(),savedActivity2.getId());
+        savedPassenger2 = passengerService.addActivityToPassenger(savedPassenger2.getId(),savedActivity3.getId());
+        savedPassenger2 = passengerService.addActivityToPassenger(savedPassenger2.getId(),savedActivity4.getId());
+        savedPassenger3 = passengerService.addActivityToPassenger(savedPassenger3.getId(),savedActivity5.getId());
+        savedPassenger3 = passengerService.addActivityToPassenger(savedPassenger3.getId(),savedActivity6.getId());
+        List<Passenger> passengers = savedTravelPackage.getPassengers();
 
-        passengerRepository.saveAll(Arrays.asList(passenger1, passenger2, passenger3));
-
-        List<Passenger> passengers = package1.getPassengers();
-
-        for (Passenger passenger: passengers){
-            if (passenger.getName() == passenger1.getName()){
-                passenger.signUpForActivity(activity1);
-                passenger.signUpForActivity(activity2);
-            } else if (passenger.getName() == passenger2.getName()){
-                passenger.signUpForActivity(activity3);
-                passenger.signUpForActivity(activity4);
-            } else {
-                passenger.signUpForActivity(activity5);
-                passenger.signUpForActivity(activity6);
-            }
-        }
-        package1.setPassengers(passengers);
-
-        passengerRepository.saveAll(Arrays.asList(passenger1, passenger2, passenger3));
 
         System.out.println("----------------------------------------------------");
         System.out.println("Itinerary - ");
-        package1.printItinerary();
+        travelPackagePrintService.printItinerary(savedTravelPackage.getId());
         System.out.println("----------------------------------------------------");
         System.out.println("Available activities - ");
-        package1.printAvailableActivities();
+        travelPackagePrintService.printAvailableActivities(savedTravelPackage.getId());
         System.out.println("----------------------------------------------------");
         System.out.println("Passenger List - ");
-        package1.printPassengerList();
+        travelPackagePrintService.printPassengerList(savedTravelPackage.getId());
         System.out.println("----------------------------------------------------");
         System.out.println("Passenger Details - ");
-        package1.printPassengerDetails();
+        travelPackagePrintService.printPassengerDetails(savedTravelPackage.getId());
         System.out.println("----------------------------------------------------");
 
     }

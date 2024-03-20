@@ -1,17 +1,24 @@
 package javaproject.travelmanager.Entity;
 
 import jakarta.persistence.Entity;
+import javaproject.travelmanager.Exception.ActivityNotFoundException;
+import javaproject.travelmanager.Exception.InsufficientBalanceException;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Entity class representing a Gold passenger.
  */
 @Entity
+@Getter
+@Setter
 @NoArgsConstructor
 public class GoldPassenger extends Passenger {
 
     public GoldPassenger(String name, String passengerNumber, PassengerType passengerType, double balance) {
-        super(name, passengerNumber, passengerType, balance);
+        super(name, passengerNumber, passengerType,balance);
     }
 
     /**
@@ -20,14 +27,14 @@ public class GoldPassenger extends Passenger {
      * @param activity The activity to add.
      */
     @Override
-    public void signUpForActivity(Activity activity) {
+    public void signUpForActivity(Activity activity) throws InsufficientBalanceException {
         double discountedCost = activity.getCost() * 0.9;
         if (getBalance() >= discountedCost) {
             double newBalance = getBalance() - discountedCost;
             setBalance(newBalance);
             getActivities().add(activity);
         } else {
-            System.out.println("Insufficient balance to sign up for the activity.");
+            throw new InsufficientBalanceException("Insufficient balance to sign up for the activity.");
         }
     }
 
@@ -37,7 +44,7 @@ public class GoldPassenger extends Passenger {
      * @param activityId The activity to add.
      */
     @Override
-    public void removeActivity(Long activityId) {
+    public void removeActivity(Long activityId) throws ActivityNotFoundException {
         Activity activityToRemove = null;
         for (Activity activity : getActivities()) {
             if (activity.getId().equals(activityId)) {
@@ -51,7 +58,7 @@ public class GoldPassenger extends Passenger {
             setBalance(newBalance);
             getActivities().remove(activityToRemove);
         } else {
-            System.out.println("The passenger is not signed up for this activity.");
+            throw new ActivityNotFoundException("The passenger is not signed up for this activity.");
         }
     }
 

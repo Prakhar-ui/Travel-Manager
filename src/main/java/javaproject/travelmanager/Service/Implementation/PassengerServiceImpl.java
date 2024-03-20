@@ -4,20 +4,18 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import javaproject.travelmanager.DTO.PassengerDTO;
 import javaproject.travelmanager.Entity.*;
+import javaproject.travelmanager.Exception.ActivityNotFoundException;
+import javaproject.travelmanager.Exception.InsufficientBalanceException;
 import javaproject.travelmanager.Repository.ActivityRepository;
 import javaproject.travelmanager.Repository.PassengerRepository;
 import javaproject.travelmanager.Repository.TravelPackageRepository;
 import javaproject.travelmanager.Service.PassengerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Service class responsible for handling operations related to passengers.
@@ -57,7 +55,7 @@ public class PassengerServiceImpl implements PassengerService {
      * @return The newly created passenger.
      */
     @Override
-    public Passenger createPassenger(@Valid @NotNull PassengerDTO passengerDTO) {
+    public Passenger createPassenger(@Valid @NotNull PassengerDTO passengerDTO) throws InsufficientBalanceException {
             Passenger passenger = switch (passengerDTO.getPassengerType()) {
                 case STANDARD -> new StandardPassenger(passengerDTO.getName(), passengerDTO.getPassengerNumber(),
                         passengerDTO.getPassengerType(), passengerDTO.getBalance());
@@ -93,8 +91,25 @@ public class PassengerServiceImpl implements PassengerService {
      * @return The passenger, if found; otherwise, null.
      */
     @Override
-    public Optional<Passenger> getPassenger(@Valid @NotNull Long passengerId) {
-        return Optional.ofNullable(passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger with ID " + passengerId + " not found.")));
+    public Optional<? extends Passenger> getPassenger(@Valid @NotNull Long passengerId) {
+        Optional<Passenger> passengerOptional = passengerRepository.findById(passengerId);
+        if (passengerOptional.isPresent()) {
+            Passenger passenger = passengerOptional.get();
+            switch (passenger) {
+                case GoldPassenger goldPassenger -> {
+                    return Optional.of(goldPassenger);
+                }
+                case StandardPassenger standardPassenger -> {
+                    return Optional.of(standardPassenger);
+                }
+                case PremiumPassenger premiumPassenger -> {
+                    return Optional.of(premiumPassenger);
+                }
+                default -> {
+                }
+            }
+        }
+        throw new IllegalArgumentException("Passenger with ID " + passengerId + " not found.");
     }
 
     /**
@@ -121,7 +136,7 @@ public class PassengerServiceImpl implements PassengerService {
      * @return The updated passenger, if found; otherwise, null.
      */
     @Override
-    public Optional<Passenger> updatePassenger(@Valid @NotNull Long passengerId, @Valid @NotNull PassengerDTO passengerDTO) {
+    public Optional<Passenger> updatePassenger(@Valid @NotNull Long passengerId, @Valid @NotNull PassengerDTO passengerDTO) throws InsufficientBalanceException {
         Passenger existingPassenger = passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger with ID " + passengerId + " not found."));
             existingPassenger.setName(passengerDTO.getName());
             existingPassenger.setPassengerNumber(passengerDTO.getPassengerNumber());
@@ -150,25 +165,25 @@ public class PassengerServiceImpl implements PassengerService {
      * Adds activities to the given passenger based on their IDs.
      *
      * @param passengerId The passenger to which activities will be added.
-     * @param activityId The IDs of the activities to be added to the passenger.
+     * @param activityId  The IDs of the activities to be added to the passenger.
      * @throws IllegalArgumentException if any of the activities with the given IDs are not found.
      */
 
     @Override
-    public Passenger addActivityToPassenger(@Valid @NotNull Long passengerId, @Valid @NotNull Long activityId) {
-        Passenger passenger = passengerRepository.findById(passengerId)
-                .orElseThrow(() -> new IllegalArgumentException("Passenger with ID " + passengerId + " not found."));
+    public Optional<? extends Passenger> addActivityToPassenger(@Valid @NotNull Long passengerId, @Valid @NotNull Long activityId) throws InsufficientBalanceException {
+        Optional<? extends Passenger> passenger = getPassenger(passengerId);
 
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new IllegalArgumentException("Activity with ID " + activityId + " not found."));
+        if (passenger.isPresent()){
+            passenger.get().signUpForActivity(activity);
+            return passengerRepository.save(passenger);
+        }
 
-        passenger.signUpForActivity(activity);
-
-        return passengerRepository.save(passenger);
     }
 
     @Override
-    public Passenger removeActivityFromPassenger( @Valid @NotNull Long passengerId, @Valid @NotNull Long activityId) {
+    public Passenger removeActivityFromPassenger( @Valid @NotNull Long passengerId, @Valid @NotNull Long activityId) throws ActivityNotFoundException {
         Passenger passenger = passengerRepository.findById(passengerId)
                 .orElseThrow(() -> new IllegalArgumentException("Passenger with ID " + passengerId + " not found."));
 

@@ -5,8 +5,11 @@ import javaproject.travelmanager.Entity.Activity;
 import javaproject.travelmanager.Entity.Destination;
 import javaproject.travelmanager.Entity.Passenger;
 import javaproject.travelmanager.Entity.TravelPackage;
+import javaproject.travelmanager.Exception.ActivityNotFoundException;
+import javaproject.travelmanager.Exception.InsufficientBalanceException;
 import javaproject.travelmanager.Service.DestinationService;
 import javaproject.travelmanager.Service.PassengerService;
+import javaproject.travelmanager.Service.TravelPackagePrintService;
 import javaproject.travelmanager.Service.TravelPackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +28,9 @@ public class TravelPackageController {
 
     @Autowired
     private TravelPackageService travelPackageService;
+
+    @Autowired
+    private TravelPackagePrintService travelPackagePrintService;
 
     @Autowired
     private PassengerService passengerService;
@@ -113,7 +119,7 @@ public class TravelPackageController {
     public ResponseEntity<TravelPackage> addActivityToPassenger(
             @PathVariable Long travelPackageId,
             @PathVariable Long passengerId,
-            @PathVariable Long activityId) {
+            @PathVariable Long activityId) throws InsufficientBalanceException {
 
         Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
         if (travelPackage.isPresent()) {
@@ -137,7 +143,7 @@ public class TravelPackageController {
     public ResponseEntity<TravelPackage> removeActivityFromPassenger(
             @PathVariable Long travelPackageId,
             @PathVariable Long passengerId,
-            @PathVariable Long activityId) {
+            @PathVariable Long activityId) throws ActivityNotFoundException {
 
         Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
         if (travelPackage.isPresent()) {
@@ -161,7 +167,7 @@ public class TravelPackageController {
     public ResponseEntity<TravelPackage> addActivitiesToPassenger(
             @PathVariable Long travelPackageId,
             @PathVariable Long passengerId,
-            @RequestBody List<Long> activitiesIds) {
+            @RequestBody List<Long> activitiesIds) throws InsufficientBalanceException {
 
         Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
         if (travelPackage.isPresent()) {
@@ -189,7 +195,7 @@ public class TravelPackageController {
     public ResponseEntity<TravelPackage> removeActivitiesToPassenger(
             @PathVariable Long travelPackageId,
             @PathVariable Long passengerId,
-            @RequestBody List<Long> activitiesIds) {
+            @RequestBody List<Long> activitiesIds) throws ActivityNotFoundException {
 
         Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
         if (travelPackage.isPresent()) {
@@ -390,6 +396,29 @@ public class TravelPackageController {
         }
     }
 
+    /**
+     * Prints the details of passengers in a travel package.
+     *
+     * @param travelPackageId The ID of the travel package.
+     * @return ResponseEntity with HTTP status 200 (OK) and a message indicating the passenger details were printed successfully.
+     */
+    @GetMapping("/{travelPackageId}/print-itinerary")
+    public ResponseEntity<String> printItinerary(@PathVariable Long travelPackageId) {
+        travelPackagePrintService.printItinerary(travelPackageId);
+        return ResponseEntity.ok("Itinerary printed.");
+    }
+
+    /**
+     * Prints the details of passengers in a travel package.
+     *
+     * @param travelPackageId The ID of the travel package.
+     * @return ResponseEntity with HTTP status 200 (OK) and a message indicating the passenger details were printed successfully.
+     */
+    @GetMapping("/{travelPackageId}/print-passenger-list")
+    public ResponseEntity<String> printPassengerList(@PathVariable Long travelPackageId) {
+        travelPackagePrintService.printPassengerList(travelPackageId);
+        return ResponseEntity.ok("Passenger List printed.");
+    }
 
     /**
      * Prints the details of passengers in a travel package.
@@ -399,7 +428,7 @@ public class TravelPackageController {
      */
     @GetMapping("/{travelPackageId}/print-passenger-details")
     public ResponseEntity<String> printPassengerDetails(@PathVariable Long travelPackageId) {
-        travelPackageService.printPassengerDetails(travelPackageId);
+        travelPackagePrintService.printPassengerDetails(travelPackageId);
         return ResponseEntity.ok("Passenger Details printed.");
     }
 
@@ -411,7 +440,7 @@ public class TravelPackageController {
      */
     @GetMapping("/{travelPackageId}/print-available-activities")
     public ResponseEntity<String> printAvailableActivities(@PathVariable Long travelPackageId) {
-        travelPackageService.printAvailableActivities(travelPackageId);
+        travelPackagePrintService.printAvailableActivities(travelPackageId);
         return ResponseEntity.ok("Available Activities printed.");
     }
 }

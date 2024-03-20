@@ -1,17 +1,23 @@
 package javaproject.travelmanager.Entity;
 
 import jakarta.persistence.Entity;
+import javaproject.travelmanager.Exception.ActivityNotFoundException;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Entity class representing a Premium passenger.
  */
 @Entity
+@Getter
+@Setter
 @NoArgsConstructor
 public class PremiumPassenger extends Passenger {
 
     public PremiumPassenger(String name, String passengerNumber, PassengerType passengerType) {
-        super(name, passengerNumber, passengerType, 0); // Premium passengers have no balance
+        super(name, passengerNumber, passengerType,0);
     }
 
     /**
@@ -30,7 +36,7 @@ public class PremiumPassenger extends Passenger {
      * @param activityId The activity to add.
      */
     @Override
-    public void removeActivity(Long activityId) {
+    public void removeActivity(Long activityId) throws ActivityNotFoundException {
         Activity activityToRemove = null;
         for (Activity activity : getActivities()) {
             if (activity.getId().equals(activityId)) {
@@ -41,7 +47,7 @@ public class PremiumPassenger extends Passenger {
         if (activityToRemove != null) {
             getActivities().remove(activityToRemove);
         } else {
-            System.out.println("The passenger is not signed up for this activity.");
+            throw new ActivityNotFoundException("The passenger is not signed up for this activity.");
         }
     }
 }

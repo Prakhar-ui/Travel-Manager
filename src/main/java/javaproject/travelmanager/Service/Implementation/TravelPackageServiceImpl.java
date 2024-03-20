@@ -244,31 +244,5 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         travelPackageRepository.deleteById(travelPackageId);
     }
 
-    @Override
-    public void printItinerary(Long travelPackageId) {
-        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
-                .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
-        travelPackage.printItinerary();
-    }
 
-    @Override
-    public void printPassengerList(Long travelPackageId) {
-        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
-                .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
-        travelPackage.printPassengerList();
-    }
-
-    @Override
-    public void printPassengerDetails(Long travelPackageId) {
-        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
-                .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
-        travelPackage.printPassengerDetails();
-    }
-
-    @Override
-    public void printAvailableActivities(Long travelPackageId) {
-        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
-                .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
-        travelPackage.printAvailableActivities();
-    }
 }

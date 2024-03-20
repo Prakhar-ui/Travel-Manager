@@ -4,6 +4,8 @@ import javaproject.travelmanager.DTO.ActivityDTO;
 import javaproject.travelmanager.DTO.DestinationDTO;
 import javaproject.travelmanager.DTO.PassengerDTO;
 import javaproject.travelmanager.Entity.*;
+import javaproject.travelmanager.Exception.ActivityNotFoundException;
+import javaproject.travelmanager.Exception.InsufficientBalanceException;
 import javaproject.travelmanager.Repository.ActivityRepository;
 import javaproject.travelmanager.Repository.DestinationRepository;
 import javaproject.travelmanager.Repository.PassengerRepository;
@@ -44,7 +46,7 @@ public class testPassengerServiceImpl {
     private ActivityRepository activityRepository;
 
     @Test
-    void testAddPassenger() {
+    void testAddPassenger() throws InsufficientBalanceException {
         PassengerDTO passengerDTO = new PassengerDTO();
         passengerDTO.setName("Test Passenger");
         passengerDTO.setPassengerNumber("12345");
@@ -96,7 +98,7 @@ public class testPassengerServiceImpl {
         assertEquals(2, passengers.size());
     }
     @Test
-    void testUpdatePassenger() {
+    void testUpdatePassenger() throws InsufficientBalanceException {
         // Mock data
         Long passengerId = 1L;
         PassengerDTO passengerDTO = new PassengerDTO();
@@ -163,7 +165,7 @@ void testDeletePassenger() {
 }
 
     @Test
-    void testAddActivityToPassenger() {
+    void testAddActivityToPassenger() throws InsufficientBalanceException {
         Long passengerId = 1L;
         Long activityId = 1L;
 
@@ -182,7 +184,7 @@ void testDeletePassenger() {
         assertTrue(mockPassenger.getActivities().contains(mockActivity));
     }
     @Test
-    void testRemoveActivityFromPassenger() {
+    void testRemoveActivityFromPassenger() throws InsufficientBalanceException, ActivityNotFoundException {
         Long passengerId = 1L;
         Long activityId = 1L;
 

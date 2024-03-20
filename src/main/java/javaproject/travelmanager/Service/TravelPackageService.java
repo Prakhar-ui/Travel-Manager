@@ -90,11 +90,4 @@ public interface TravelPackageService {
      */
     void deleteTravelPackage(Long travelPackageId);
 
-    void printItinerary(Long travelPackageId);
-
-    void printPassengerList(Long travelPackageId);
-
-    void printPassengerDetails(Long travelPackageId);
-
-    void printAvailableActivities(Long travelPackageId);
 }

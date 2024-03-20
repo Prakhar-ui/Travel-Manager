@@ -2,6 +2,8 @@ package javaproject.travelmanager.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import javaproject.travelmanager.Exception.ActivityNotFoundException;
+import javaproject.travelmanager.Exception.InsufficientBalanceException;
 import lombok.*;
 
 import java.util.*;
@@ -83,14 +85,14 @@ public abstract class Passenger {
      *
      * @param activity The activity to add.
      */
-    public abstract void signUpForActivity(Activity activity);
+    public abstract void signUpForActivity(Activity activity) throws InsufficientBalanceException;
 
     /**
      * Removes an activity to the passenger.
      *
      * @param activityId The activity to add.
      */
-    public abstract void removeActivity(Long activityId);
+    public abstract void removeActivity(Long activityId) throws ActivityNotFoundException;
 
     /**
      * Adds a travel package to the passenger.

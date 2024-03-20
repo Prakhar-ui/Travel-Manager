@@ -3,6 +3,8 @@ package javaproject.travelmanager.Service;
 import javaproject.travelmanager.DTO.PassengerDTO;
 import javaproject.travelmanager.Entity.Activity;
 import javaproject.travelmanager.Entity.Passenger;
+import javaproject.travelmanager.Exception.ActivityNotFoundException;
+import javaproject.travelmanager.Exception.InsufficientBalanceException;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +20,7 @@ public interface PassengerService {
      * @param passengerDTO The DTO containing passenger information.
      * @return The newly created passenger.
      */
-    Passenger createPassenger(PassengerDTO passengerDTO);
+    Passenger createPassenger(PassengerDTO passengerDTO) throws InsufficientBalanceException;
 
     /**
      * Retrieves a passenger by its ID.
@@ -26,7 +28,7 @@ public interface PassengerService {
      * @param passengerId The ID of the passenger to retrieve.
      * @return The passenger if found, otherwise empty.
      */
-    Optional<Passenger> getPassenger(Long passengerId);
+    Optional<? extends Passenger> getPassenger(Long passengerId);
 
     /**
      * Retrieves all passengers.
@@ -46,15 +48,15 @@ public interface PassengerService {
      * @param passengerDTO The DTO containing updated passenger information.
      * @return The updated passenger if found, otherwise empty.
      */
-    Optional<Passenger> updatePassenger(Long passengerId, PassengerDTO passengerDTO);
+    Optional<Passenger> updatePassenger(Long passengerId, PassengerDTO passengerDTO) throws InsufficientBalanceException;
 
     /**
      * Adds an activity to a passenger.
      *
      * @param passengerId The ID of the passenger.
-     * @param activityId The ID of the activity to add.
+     * @param activityId  The ID of the activity to add.
      */
-    Passenger addActivityToPassenger(Long passengerId, Long activityId);
+    Optional<? extends Passenger> addActivityToPassenger(Long passengerId, Long activityId) throws InsufficientBalanceException;
 
     /**
      * Removes an activity from a passenger.
@@ -62,7 +64,7 @@ public interface PassengerService {
      * @param passengerId The ID of the passenger.
      * @param activityId The ID of the activity to remove.
      */
-    Passenger removeActivityFromPassenger( Long passengerId, Long activityId);
+    Passenger removeActivityFromPassenger( Long passengerId, Long activityId) throws ActivityNotFoundException;
 
     /**
      * Adds an activity to a passenger.
