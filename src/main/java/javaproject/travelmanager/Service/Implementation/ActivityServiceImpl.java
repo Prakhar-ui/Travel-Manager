@@ -23,12 +23,12 @@ public class ActivityServiceImpl implements ActivityService {
 
 
     private final ActivityRepository activityRepository;
-    private final DestinationService destinationService;
+    private final DestinationRepository destinationRepository;
 
     @Autowired
-    public ActivityServiceImpl( ActivityRepository activityRepository, DestinationService destinationService) {
+    public ActivityServiceImpl( ActivityRepository activityRepository, DestinationRepository destinationRepository) {
         this.activityRepository = activityRepository;
-        this.destinationService = destinationService;
+        this.destinationRepository = destinationRepository;
     }
 
 
@@ -46,7 +46,7 @@ public class ActivityServiceImpl implements ActivityService {
         activity.setCapacity(capacity);
         activity.setCost(cost);
         if (destinationId != null){
-            Destination destination = destinationService.getDestination(destinationId);
+            Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
             activity.setDestination(destination);
         }
         return activityRepository.save(activity);
@@ -74,7 +74,7 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public void setDestinationToActivity(Long activityId, Long destinationId) {
-        Destination destination = destinationService.getDestination(destinationId);
+        Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
         Optional<Activity> activity = activityRepository.findById(activityId);
         if (activity.isPresent()){
             activity.get().setDestination(destination);

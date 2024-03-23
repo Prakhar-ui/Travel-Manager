@@ -44,9 +44,9 @@ public class PassengerController {
      * or HTTP status 404 (Not Found) if the passenger does not exist.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<? extends Passenger> getPassengerById(@PathVariable Long id) {
-        Optional<? extends Passenger> passenger = passengerService.getPassenger(id);
-        return passenger.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<Passenger> getPassengerById(@PathVariable Long id) {
+        Passenger passenger = passengerService.getPassenger(id);
+        return new ResponseEntity<>(passenger,HttpStatus.OK);
     }
 
     /**
@@ -56,8 +56,8 @@ public class PassengerController {
      * or HTTP status 204 (No Content) if no passengers exist.
      */
     @GetMapping("/all")
-    public ResponseEntity<List<? extends Passenger>> getAllPassengers() {
-        List<? extends Passenger> passengers = passengerService.getAllPassengers();
+    public ResponseEntity<List<Passenger>> getAllPassengers() {
+        List<Passenger> passengers = passengerService.getAllPassengers();
         if (!passengers.isEmpty()) {
             return ResponseEntity.ok(passengers);
         } else {
@@ -74,9 +74,9 @@ public class PassengerController {
      * or HTTP status 404 (Not Found) if the passenger does not exist.
      */
     @PostMapping("/edit/{id}")
-    public ResponseEntity<? extends Passenger> updatePassenger(@PathVariable Long id, @RequestBody PassengerDTO passengerDTO) throws InsufficientBalanceException, InsufficientActivityCapacityException {
-        Optional<? extends Passenger> updatedPassenger = passengerService.updatePassenger(id, passengerDTO);
-        return updatedPassenger.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<Passenger> updatePassenger(@PathVariable Long id, @RequestBody PassengerDTO passengerDTO) throws InsufficientBalanceException, InsufficientActivityCapacityException {
+        Passenger updatedPassenger = passengerService.updatePassenger(id, passengerDTO);
+        return new ResponseEntity<>(updatedPassenger,HttpStatus.OK);
 
     }
 

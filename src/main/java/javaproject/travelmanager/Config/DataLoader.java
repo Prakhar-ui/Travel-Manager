@@ -55,11 +55,13 @@ public class DataLoader implements CommandLineRunner {
         activity1.setDescription("Enjoy beach party");
         activity1.setCost(2000.0);
         activity1.setCapacity(10);
+
         ActivityDTO activity2 = new ActivityDTO();
         activity2.setName("Scuba Diving");
         activity2.setDescription("Explore underwater world");
         activity2.setCost(5000.0);
         activity2.setCapacity(4);
+
         ActivityDTO activity3 = new ActivityDTO();
         activity3.setName("City Tour");
         activity3.setDescription("Explore historical monuments");
@@ -98,7 +100,6 @@ public class DataLoader implements CommandLineRunner {
         destinationService.addActivityToDestination(savedDestination2.getId(),savedActivity4.getId());
         destinationService.addActivityToDestination(savedDestination3.getId(),savedActivity5.getId());
         destinationService.addActivityToDestination(savedDestination3.getId(),savedActivity6.getId());
-
 
         // Create sample passengers
         PassengerDTO passenger1 = new PassengerDTO();
@@ -141,6 +142,10 @@ public class DataLoader implements CommandLineRunner {
         passengerService.setTravelPackageToPassenger(savedPassenger1.getId(),savedTravelPackage.getId());
         passengerService.setTravelPackageToPassenger(savedPassenger2.getId(),savedTravelPackage.getId());
         passengerService.setTravelPackageToPassenger(savedPassenger3.getId(),savedTravelPackage.getId());
+
+        destinationService.setTravelPackageToDestination(savedDestination1.getId(),savedTravelPackage.getId());
+        destinationService.setTravelPackageToDestination(savedDestination2.getId(),savedTravelPackage.getId());
+        destinationService.setTravelPackageToDestination(savedDestination3.getId(),savedTravelPackage.getId());
 
         passengerService.addActivityToPassenger(savedPassenger1.getId(),savedActivity1.getId());
         passengerService.addActivityToPassenger(savedPassenger1.getId(),savedActivity2.getId());

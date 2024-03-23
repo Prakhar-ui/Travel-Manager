@@ -44,8 +44,8 @@ public class ActivityController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Activity> getActivityById(@PathVariable Long id) {
-        Optional<Activity> activity = activityService.getActivity(id);
-        return activity.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        Activity activity = activityService.getActivity(id);
+        return new ResponseEntity<>(activity,HttpStatus.OK);
     }
 
     /**
@@ -74,9 +74,8 @@ public class ActivityController {
      */
     @PostMapping("/edit/{id}")
     public ResponseEntity<Activity> updateActivity(@PathVariable Long id, @RequestBody ActivityDTO activityDTO) {
-        Optional<Activity> updatedActivity = activityService.updateActivity(id, activityDTO);
-        return updatedActivity.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-
+        Activity updatedActivity = activityService.updateActivity(id, activityDTO);
+        return new ResponseEntity<>(updatedActivity,HttpStatus.OK);
     }
 
     /**

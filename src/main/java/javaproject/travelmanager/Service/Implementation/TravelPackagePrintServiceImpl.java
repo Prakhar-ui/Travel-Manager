@@ -22,14 +22,8 @@ import java.util.List;
 public class TravelPackagePrintServiceImpl implements TravelPackagePrintService {
     private final TravelPackageService travelPackageService;
 
-    private final PassengerService passengerService;
-
-    private final DestinationService destinationService;
-
-    public TravelPackagePrintServiceImpl(TravelPackageService travelPackageService, PassengerService passengerService, DestinationService destinationService) {
+    public TravelPackagePrintServiceImpl(TravelPackageService travelPackageService) {
         this.travelPackageService = travelPackageService;
-        this.passengerService = passengerService;
-        this.destinationService = destinationService;
     }
 
     /**

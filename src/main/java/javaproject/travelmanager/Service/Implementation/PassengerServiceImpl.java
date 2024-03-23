@@ -7,6 +7,7 @@ import javaproject.travelmanager.Entity.*;
 import javaproject.travelmanager.Exception.InsufficientActivityCapacityException;
 import javaproject.travelmanager.Exception.InsufficientBalanceException;
 import javaproject.travelmanager.Repository.PassengerRepository;
+import javaproject.travelmanager.Repository.TravelPackageRepository;
 import javaproject.travelmanager.Service.ActivityService;
 import javaproject.travelmanager.Service.PassengerService;
 import javaproject.travelmanager.Service.TravelPackageService;
@@ -30,21 +31,16 @@ public class PassengerServiceImpl implements PassengerService {
 
     private final PassengerRepository passengerRepository;
 
-    private final TravelPackageService travelPackageService;
+    private final TravelPackageRepository travelPackageRepository;
 
     private final ActivityService activityService;
 
-    /**
-     * Constructs a new PassengerServiceImpl with the provided repositories.
-     *
-     * @param travelPackageService The repository for managing travel package entities.
-     * @param passengerRepository The repository for managing passenger entities.
-     * @param activityService    The repository for managing activity entities.
-     */
     @Autowired
-    public PassengerServiceImpl(TravelPackageService travelPackageService, PassengerRepository passengerRepository, ActivityService activityService) {
-        this.travelPackageService = travelPackageService;
+    public PassengerServiceImpl(PassengerRepository passengerRepository,
+                                TravelPackageRepository travelPackageRepository,
+                                ActivityService activityService) {
         this.passengerRepository = passengerRepository;
+        this.travelPackageRepository = travelPackageRepository;
         this.activityService = activityService;
     }
 
@@ -65,7 +61,7 @@ public class PassengerServiceImpl implements PassengerService {
         passenger.setBalance(balance);
 
         if (travelPackageId != null) {
-            TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
+            TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId).orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
             passenger.setTravelPackage(travelPackage);
         }
         if (activitiesIds != null && !activitiesIds.isEmpty()) {
@@ -148,7 +144,7 @@ public class PassengerServiceImpl implements PassengerService {
     @Override
     public void setTravelPackageToPassenger(Long passengerId, Long travelPackageId) {
         Passenger passenger = passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
-        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
+        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId).orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
         passenger.setTravelPackage(travelPackage);
     }
 

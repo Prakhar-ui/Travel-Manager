@@ -26,20 +26,16 @@ public class TravelPackageServiceImpl implements TravelPackageService {
 
     private final TravelPackageRepository travelPackageRepository;
 
-    private final ActivityService activityService;
-
     private final PassengerService passengerService;
 
     private final DestinationService destinationService;
 
     @Autowired
     public TravelPackageServiceImpl(TravelPackageRepository travelPackageRepository,
-                                    ActivityService activityService,
                                     PassengerService passengerService,
                                     DestinationService destinationService
     ) {
         this.travelPackageRepository = travelPackageRepository;
-        this.activityService = activityService;
         this.passengerService = passengerService;
         this.destinationService = destinationService;
     }

@@ -43,8 +43,8 @@ public class DestinationController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Destination> getDestinationById(@PathVariable Long id) {
-        Optional<Destination> destination = destinationService.getDestination(id);
-        return destination.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        Destination destination = destinationService.getDestination(id);
+        return new ResponseEntity<>(destination,HttpStatus.OK);
     }
 
     /**
@@ -73,8 +73,8 @@ public class DestinationController {
      */
     @PostMapping("/edit/{id}")
     public ResponseEntity<Destination> updateDestination(@PathVariable Long id, @RequestBody DestinationDTO destinationDTO) {
-        Optional<Destination> updatedDestination = destinationService.updateDestination(id, destinationDTO);
-        return updatedDestination.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        Destination updatedDestination = destinationService.updateDestination(id, destinationDTO);
+        return new ResponseEntity<>(updatedDestination,HttpStatus.OK);
     }
 
     /**

@@ -61,8 +61,8 @@ public class TravelPackageController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<TravelPackage> getTravelPackageById(@PathVariable Long id) {
-        Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(id);
-        return travelPackage.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(travelPackage);
     }
 
     /**
@@ -75,8 +75,8 @@ public class TravelPackageController {
      */
     @PostMapping("/edit/{id}")
     public ResponseEntity<TravelPackage> updateTravelPackage(@PathVariable Long travelPackageId, @RequestBody TravelPackageDTO travelPackageDTO) {
-        Optional<TravelPackage> updatedTravelPackage = travelPackageService.updateTravelPackage(travelPackageId, travelPackageDTO);
-        return updatedTravelPackage.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        TravelPackage updatedTravelPackage = travelPackageService.updateTravelPackage(travelPackageId, travelPackageDTO);
+        return new ResponseEntity<>(updatedTravelPackage,HttpStatus.OK);
 
     }
 
@@ -120,15 +120,11 @@ public class TravelPackageController {
     public ResponseEntity<TravelPackage> addActivityToPassenger(
             @PathVariable Long travelPackageId,
             @PathVariable Long passengerId,
-            @PathVariable Long activityId) throws InsufficientBalanceException, InsufficientActivityCapacityException {
+            @PathVariable Long activityId)  {
 
-        Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
-        if (travelPackage.isPresent()) {
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
             passengerService.addActivityToPassenger(passengerId,activityId);
-            return ResponseEntity.ok(travelPackage.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return new ResponseEntity<>(travelPackage,HttpStatus.OK);
     }
 
     /**
@@ -144,15 +140,11 @@ public class TravelPackageController {
     public ResponseEntity<TravelPackage> removeActivityFromPassenger(
             @PathVariable Long travelPackageId,
             @PathVariable Long passengerId,
-            @PathVariable Long activityId) throws ActivityNotFoundException {
+            @PathVariable Long activityId){
 
-        Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
-        if (travelPackage.isPresent()) {
-            passengerService.removeActivityFromPassenger(passengerId,activityId);
-            return ResponseEntity.ok(travelPackage.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
+        return new ResponseEntity<>(travelPackage,HttpStatus.OK);
+
     }
 
     /**
@@ -168,19 +160,15 @@ public class TravelPackageController {
     public ResponseEntity<TravelPackage> addActivitiesToPassenger(
             @PathVariable Long travelPackageId,
             @PathVariable Long passengerId,
-            @RequestBody List<Long> activitiesIds) throws InsufficientBalanceException, InsufficientActivityCapacityException {
+            @RequestBody List<Long> activitiesIds){
 
-        Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
-        if (travelPackage.isPresent()) {
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
             if (activitiesIds != null && !activitiesIds.isEmpty()) {
                 for (Long activityId : activitiesIds){
                     passengerService.addActivityToPassenger(passengerId, activityId);
                 }
             }
-            return ResponseEntity.ok(travelPackage.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return new ResponseEntity<>(travelPackage,HttpStatus.OK);
     }
 
     /**
@@ -196,19 +184,15 @@ public class TravelPackageController {
     public ResponseEntity<TravelPackage> removeActivitiesToPassenger(
             @PathVariable Long travelPackageId,
             @PathVariable Long passengerId,
-            @RequestBody List<Long> activitiesIds) throws ActivityNotFoundException {
+            @RequestBody List<Long> activitiesIds){
 
-        Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
-        if (travelPackage.isPresent()) {
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
             if (activitiesIds != null && !activitiesIds.isEmpty()) {
                 for (Long activityId : activitiesIds){
                     passengerService.removeActivityFromPassenger(passengerId, activityId);
                 }
             }
-            return ResponseEntity.ok(travelPackage.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return new ResponseEntity<>(travelPackage,HttpStatus.OK);
     }
 
     /**
@@ -224,13 +208,10 @@ public class TravelPackageController {
             @PathVariable Long travelPackageId,
             @PathVariable Long destinationId) {
 
-        Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
-        if (travelPackage.isPresent()) {
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
             travelPackageService.addDestinationToTravelPackage(travelPackageId, destinationId);
-            return ResponseEntity.ok(travelPackage.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return new ResponseEntity<>(travelPackage,HttpStatus.OK);
+
     }
 
     /**
@@ -246,13 +227,10 @@ public class TravelPackageController {
             @PathVariable Long travelPackageId,
             @PathVariable Long destinationId) {
 
-        Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
-        if (travelPackage.isPresent()) {
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
             travelPackageService.removeDestinationFromTravelPackage(travelPackageId, destinationId);
-            return ResponseEntity.ok(travelPackage.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return new ResponseEntity<>(travelPackage,HttpStatus.OK);
+
     }
 
     /**
@@ -268,17 +246,14 @@ public class TravelPackageController {
             @PathVariable Long travelPackageId,
             @RequestBody List<Long> destinationsIds) {
 
-        Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
-        if (travelPackage.isPresent()) {
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
             if (destinationsIds != null && !destinationsIds.isEmpty()) {
                 for (Long destinationId : destinationsIds){
                     travelPackageService.addDestinationToTravelPackage(travelPackageId, destinationId);
                 }
             }
-            return ResponseEntity.ok(travelPackage.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return new ResponseEntity<>(travelPackage,HttpStatus.OK);
+
     }
 
     /**
@@ -294,17 +269,14 @@ public class TravelPackageController {
             @PathVariable Long travelPackageId,
             @RequestBody List<Long> destinationsIds) {
 
-        Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
-        if (travelPackage.isPresent()) {
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
             if (destinationsIds != null && !destinationsIds.isEmpty()) {
                 for (Long destinationId : destinationsIds){
                     travelPackageService.removeDestinationFromTravelPackage(travelPackageId, destinationId);
                 }
             }
-            return ResponseEntity.ok(travelPackage.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return new ResponseEntity<>(travelPackage,HttpStatus.OK);
+
     }
 
 
@@ -322,13 +294,10 @@ public class TravelPackageController {
             @PathVariable Long travelPackageId,
             @PathVariable Long passengerId) {
 
-        Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
-        if (travelPackage.isPresent()) {
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
             travelPackageService.addPassengerToTravelPackage(travelPackageId,passengerId);
-            return ResponseEntity.ok(travelPackage.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return new ResponseEntity<>(travelPackage,HttpStatus.OK);
+
     }
 
     /**
@@ -344,13 +313,10 @@ public class TravelPackageController {
             @PathVariable Long travelPackageId,
             @PathVariable Long passengerId) {
 
-        Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
-        if (travelPackage.isPresent()) {
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
             travelPackageService.removePassengerFromTravelPackage(travelPackageId,passengerId);
-            return ResponseEntity.ok(travelPackage.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return new ResponseEntity<>(travelPackage,HttpStatus.OK);
+
     }
 
     /**
@@ -366,17 +332,14 @@ public class TravelPackageController {
             @PathVariable Long travelPackageId,
             @RequestBody  List<Long> passengersIds) {
 
-        Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
-        if (travelPackage.isPresent()) {
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
             if (passengersIds != null && !passengersIds.isEmpty()) {
                 for (Long passengerId : passengersIds){
                     travelPackageService.addPassengerToTravelPackage(travelPackageId, passengerId);
                 }
             }
-            return ResponseEntity.ok(travelPackage.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return new ResponseEntity<>(travelPackage,HttpStatus.OK);
+
     }
 
     @PostMapping("/{travelPackageId}/remove-passengers")
@@ -384,17 +347,14 @@ public class TravelPackageController {
             @PathVariable Long travelPackageId,
             @RequestBody  List<Long> passengersIds) {
 
-        Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
-        if (travelPackage.isPresent()) {
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
             if (passengersIds != null && !passengersIds.isEmpty()) {
                 for (Long passengerId : passengersIds){
                     travelPackageService.removePassengerFromTravelPackage(travelPackageId, passengerId);
                 }
             }
-            return ResponseEntity.ok(travelPackage.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return new ResponseEntity<>(travelPackage,HttpStatus.OK);
+
     }
 
     /**

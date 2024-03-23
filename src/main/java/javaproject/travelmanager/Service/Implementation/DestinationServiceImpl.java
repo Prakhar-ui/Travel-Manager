@@ -5,6 +5,7 @@ import javaproject.travelmanager.Entity.Activity;
 import javaproject.travelmanager.Entity.Destination;
 import javaproject.travelmanager.Entity.TravelPackage;
 import javaproject.travelmanager.Repository.DestinationRepository;
+import javaproject.travelmanager.Repository.TravelPackageRepository;
 import javaproject.travelmanager.Service.ActivityService;
 import javaproject.travelmanager.Service.DestinationService;
 import javaproject.travelmanager.Service.TravelPackageService;
@@ -26,16 +27,16 @@ public class DestinationServiceImpl implements DestinationService {
 
     private final DestinationRepository destinationRepository;
     private final ActivityService activityService;
-    private final TravelPackageService travelPackageService;
+    private final TravelPackageRepository travelPackageRepository;
 
 
     @Autowired
     public DestinationServiceImpl(DestinationRepository destinationRepository,
                                   ActivityService activityService,
-                                  TravelPackageService travelPackageService) {
+                                  TravelPackageRepository travelPackageRepository) {
         this.destinationRepository = destinationRepository;
         this.activityService = activityService;
-        this.travelPackageService = travelPackageService;
+        this.travelPackageRepository = travelPackageRepository;
     }
 
     @Override
@@ -46,7 +47,7 @@ public class DestinationServiceImpl implements DestinationService {
         Destination destination = new Destination();
         destination.setName(name);
         if (travelPackageId != null) {
-            TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
+            TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId).orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
             destination.setTravelPackage(travelPackage);
         }
         if (activitiesIds != null && !activitiesIds.isEmpty()) {
@@ -84,12 +85,13 @@ public class DestinationServiceImpl implements DestinationService {
         Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
         Activity activity = activityService.getActivity(activityId);
         destination.addActivity(activity);
+        activityService.setDestinationToActivity(activityId,destinationId);
     }
 
     @Override
     public void setTravelPackageToDestination(Long destinationId, Long travelPackageId) {
         Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
-        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
+        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId).orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
         destination.setTravelPackage(travelPackage);
     }
 
@@ -120,6 +122,7 @@ public class DestinationServiceImpl implements DestinationService {
         Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
         Activity activity = activityService.getActivity(activityId);
         destination.removeActivity(activity);
+        activityService.removeDestinationFromActivity(activityId);
     }
 
     @Override
