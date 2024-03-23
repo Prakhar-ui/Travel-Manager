@@ -2,7 +2,6 @@ package javaproject.travelmanager.Service;
 
 import javaproject.travelmanager.DTO.DestinationDTO;
 import javaproject.travelmanager.Entity.*;
-import javaproject.travelmanager.Repository.ActivityRepository;
 import javaproject.travelmanager.Repository.DestinationRepository;
 import javaproject.travelmanager.Service.Implementation.DestinationServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,7 @@ public class testDestinationServiceImpl {
     private DestinationRepository destinationRepository;
 
     @Mock
-    private ActivityRepository activityRepository;
+    private ActivityService activityService;
 
     @Test
     void testAddDestination() {
@@ -51,9 +50,8 @@ public class testDestinationServiceImpl {
     void testGetDestinationById() {
         Long id = 1L;
         when(destinationRepository.findById(id)).thenReturn(Optional.of(new Destination()));
-        when(destinationRepository.existsById(id)).thenReturn(true);
 
-        Optional<Destination> destination = destinationService.getDestination(id);
+        Destination destination = destinationService.getDestination(id);
 
         assertNotNull(destination);
     }
@@ -82,28 +80,23 @@ public class testDestinationServiceImpl {
         activitiesId.add(id);
         Activity activity = new Activity();
         activity.setId(id);
-        destinationDTO.setActivitiesIDs(activitiesId);
+        destinationDTO.setActivitiesIds(activitiesId);
 
         Destination existingDestination = new Destination();
         existingDestination.setId(id);
 
-        when(destinationRepository.existsById(id)).thenReturn(true);
-        when(activityRepository.existsById(any())).thenReturn(true);
         when(destinationRepository.findById(any())).thenReturn(Optional.of(existingDestination));
-        when(activityRepository.findById(any())).thenReturn(Optional.of(activity));
         when(destinationRepository.save(any())).thenReturn(existingDestination);
 
-        Optional<Destination> updatedDestination = destinationService.updateDestination(id, destinationDTO);
+        Destination updatedDestination = destinationService.updateDestination(id, destinationDTO);
 
         assertNotNull(updatedDestination);
-        assertEquals("Updated Destination", updatedDestination.get().getName());
+        assertEquals("Updated Destination", updatedDestination.getName());
     }
 
     @Test
     void testDeleteDestination() {
         Long id = 1L;
-        when(destinationRepository.findById(id)).thenReturn(Optional.of(new Destination()));
-        when(destinationRepository.existsById(id)).thenReturn(true);
 
         destinationService.deleteDestination(id);
 
@@ -120,14 +113,13 @@ public class testDestinationServiceImpl {
         Activity mockActivity = new Activity();
         mockActivity.setId(activityId);
 
-        when(activityRepository.findById(any())).thenReturn(Optional.of(mockActivity));
+        when(activityService.getActivity(any())).thenReturn(mockActivity);
         when(destinationRepository.findById(any())).thenReturn(Optional.of(mockDestination));
-        when(destinationRepository.save(any())).thenReturn(mockDestination);
 
-        Destination result = destinationService.addActivityToDestination( destinationId, activityId);
 
-        assertNotNull(result);
-        assertTrue(result.getActivities().contains(mockActivity));
+        destinationService.addActivityToDestination( destinationId, activityId);
+
+        assertTrue(mockDestination.getActivities().contains(mockActivity));
     }
     @Test
     void testRemoveActivityFromDestination() {
@@ -140,16 +132,11 @@ public class testDestinationServiceImpl {
         mockActivity.setId(activityId);
         mockDestination.addActivity(mockActivity);
 
-        when(activityRepository.findById(activityId)).thenReturn(Optional.of(mockActivity));
-        when(destinationRepository.findById(destinationId)).thenReturn(Optional.of(mockDestination));
+        when(activityService.getActivity(activityId)).thenReturn(mockActivity);
+        when(destinationRepository.findById(any())).thenReturn(Optional.of(mockDestination));
 
-        mockDestination.removeActivity(1L);
+        destinationService.removeActivityFromDestination( destinationId, activityId);
 
-        when(destinationRepository.save(any())).thenReturn(mockDestination);
-
-        Destination result = destinationService.addActivityToDestination( destinationId, activityId);
-
-        assertNotNull(result);
-        assertFalse(result.getActivities().contains(mockActivity));
+        assertFalse(mockDestination.getActivities().contains(mockActivity));
     }
 }

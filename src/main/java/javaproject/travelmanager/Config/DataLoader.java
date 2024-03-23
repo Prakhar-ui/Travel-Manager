@@ -107,17 +107,18 @@ public class DataLoader implements CommandLineRunner {
         passenger1.setPassengerNumber("1234567890");
         passenger1.setPassengerType(PassengerType.STANDARD);
         passenger1.setBalance(50000.0);
+
         PassengerDTO passenger2 = new PassengerDTO();
         passenger2.setName("Sonia");
         passenger2.setPassengerNumber("9876543210");
         passenger2.setPassengerType(PassengerType.GOLD);
         passenger2.setBalance(50000.0);
+
         PassengerDTO passenger3 = new PassengerDTO();
         passenger3.setName("Amit");
         passenger3.setPassengerNumber("5678901234");
         passenger3.setPassengerType(PassengerType.PREMIUM);
         passenger3.setBalance(0);
-
 
         Passenger savedPassenger1 = passengerService.createPassenger(passenger1);
         Passenger savedPassenger2 = passengerService.createPassenger(passenger2);

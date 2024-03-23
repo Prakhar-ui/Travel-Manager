@@ -44,7 +44,7 @@ public class testPassengerServiceImpl {
     private TravelPackageRepository travelPackageRepository;
 
     @Mock
-    private ActivityRepository activityRepository;
+    private ActivityService activityService;
 
     @Test
     void testAddPassenger() throws InsufficientBalanceException, InsufficientActivityCapacityException {
@@ -53,8 +53,10 @@ public class testPassengerServiceImpl {
         passengerDTO.setPassengerNumber("12345");
         passengerDTO.setPassengerType(PassengerType.STANDARD);
         passengerDTO.setBalance(2000);
+        
+        
 
-        when(passengerRepository.save(any())).thenReturn(new StandardPassenger(passengerDTO.getName(),passengerDTO.getPassengerNumber(),passengerDTO.getPassengerType(),passengerDTO.getBalance()));
+        when(passengerRepository.save(any())).thenReturn(new Passenger(passengerDTO.getName(),passengerDTO.getPassengerNumber(),passengerDTO.getPassengerType(),passengerDTO.getBalance()));
 
         Passenger savedPassenger = passengerService.createPassenger(passengerDTO);
 
@@ -69,24 +71,24 @@ public class testPassengerServiceImpl {
     @Test
     void testGetPassengerById() {
         Long id = 1L;
-        Passenger newPassenger = new StandardPassenger("Test Passenger","12345",PassengerType.STANDARD,2000);
+        Passenger newPassenger = new Passenger("Test Passenger","12345",PassengerType.STANDARD,2000);
         newPassenger.setId(id);
         when(passengerRepository.findById(id)).thenReturn(Optional.of(newPassenger));
 
-        Optional<Passenger> passenger = passengerService.getPassenger(id);
+        Passenger passenger = passengerService.getPassenger(id);
 
         assertNotNull(passenger);
-        assertEquals("Test Passenger", passenger.get().getName());
-        assertEquals("12345", passenger.get().getPassengerNumber());
-        assertEquals(PassengerType.STANDARD, passenger.get().getPassengerType());
-        assertEquals(2000, passenger.get().getBalance());
+        assertEquals("Test Passenger", passenger.getName());
+        assertEquals("12345", passenger.getPassengerNumber());
+        assertEquals(PassengerType.STANDARD, passenger.getPassengerType());
+        assertEquals(2000, passenger.getBalance());
     }
 
     @Test
     void testGetAllPassengers() {
         List<Passenger> passengerList = new ArrayList<>();
-        Passenger newPassenger1 = new StandardPassenger("Test Passenger","12345",PassengerType.STANDARD,2000);
-        Passenger newPassenger2 = new StandardPassenger("Test Passenger2","123456",PassengerType.GOLD,10000);
+        Passenger newPassenger1 = new Passenger("Test Passenger","12345",PassengerType.STANDARD,2000);
+        Passenger newPassenger2 = new Passenger("Test Passenger2","123456",PassengerType.GOLD,10000);
 
         passengerList.add(newPassenger1);
         passengerList.add(newPassenger2);
@@ -113,7 +115,7 @@ public class testPassengerServiceImpl {
         activityIds.add(1L); // Assuming there is an activity with ID 1
 
         // Mock optional passenger
-        Passenger existingPassenger = new StandardPassenger("Test Passenger2","123456",PassengerType.GOLD,10000);
+        Passenger existingPassenger = new Passenger("Test Passenger2","123456",PassengerType.GOLD,10000);
         existingPassenger.setId(passengerId);
 
         // Mock travel packages and activities
@@ -129,19 +131,18 @@ public class testPassengerServiceImpl {
         // Mock repository calls
         when(passengerRepository.findById(passengerId)).thenReturn(Optional.of(existingPassenger));
         when(travelPackageRepository.findAllById(travelPackageIds)).thenReturn(travelPackages);
-        when(activityRepository.findAllById(activityIds)).thenReturn(activities);
         when(passengerRepository.save(existingPassenger)).thenReturn(existingPassenger);
 
         // Call the method to be tested
-        Optional<Passenger> updatedPassenger = passengerService.updatePassenger(passengerId, passengerDTO);
+        Passenger updatedPassenger = passengerService.updatePassenger(passengerId, passengerDTO);
 
         // Assertions
         assertNotNull(updatedPassenger);
-        assertEquals(passengerId, updatedPassenger.get().getId());
-        assertEquals("Updated Name", updatedPassenger.get().getName());
-        assertEquals("54321", updatedPassenger.get().getPassengerNumber());
-        assertEquals(PassengerType.valueOf("STANDARD"), updatedPassenger.get().getPassengerType());
-        assertEquals(1000.0, updatedPassenger.get().getBalance());
+        assertEquals(passengerId, updatedPassenger.getId());
+        assertEquals("Updated Name", updatedPassenger.getName());
+        assertEquals("54321", updatedPassenger.getPassengerNumber());
+        assertEquals(PassengerType.valueOf("STANDARD"), updatedPassenger.getPassengerType());
+        assertEquals(1000.0, updatedPassenger.getBalance());
     }
 
 
@@ -151,7 +152,7 @@ void testDeletePassenger() {
     Long passengerId = 1L;
 
     // Mock optional passenger
-    Passenger existingPassenger = new StandardPassenger("Test Passenger2","123456",PassengerType.GOLD,10000);
+    Passenger existingPassenger = new Passenger("Test Passenger2","123456",PassengerType.GOLD,10000);
     existingPassenger.setId(passengerId);
 
     // Mock repository call
@@ -170,18 +171,17 @@ void testDeletePassenger() {
         Long passengerId = 1L;
         Long activityId = 1L;
 
-        Passenger mockPassenger = new StandardPassenger("Test Passenger2","123456",PassengerType.GOLD,10000);
+        Passenger mockPassenger = new Passenger("Test Passenger2","123456",PassengerType.GOLD,10000);
         Activity mockActivity = new Activity();
-        mockPassenger.signUpForActivity(mockActivity);
+        mockPassenger.addActivity(mockActivity);
 
 
-        when(activityRepository.findById(activityId)).thenReturn(Optional.of(mockActivity));
+        when(activityService.getActivity(activityId)).thenReturn(mockActivity);
         when(passengerRepository.findById(passengerId)).thenReturn(Optional.of(mockPassenger));
         when(passengerRepository.save(any())).thenReturn(mockPassenger);
 
-        Optional<Passenger> result = passengerService.addActivityToPassenger( passengerId, activityId);
+        passengerService.addActivityToPassenger( passengerId, activityId);
 
-        assertNotNull(result);
         assertTrue(mockPassenger.getActivities().contains(mockActivity));
     }
     @Test
@@ -189,22 +189,20 @@ void testDeletePassenger() {
         Long passengerId = 1L;
         Long activityId = 1L;
 
-        Passenger mockPassenger = new StandardPassenger("Test Passenger2","123456",PassengerType.GOLD,10000);
+        Passenger mockPassenger = new Passenger("Test Passenger2","123456",PassengerType.GOLD,10000);
         Activity mockActivity = new Activity();
         mockActivity.setId(activityId);
-        mockPassenger.signUpForActivity(mockActivity);
+        mockPassenger.addActivity(mockActivity);
 
-        when(activityRepository.findById(activityId)).thenReturn(Optional.of(mockActivity));
+        when(activityService.getActivity(activityId)).thenReturn(mockActivity);
         when(passengerRepository.findById(passengerId)).thenReturn(Optional.of(mockPassenger));
-        mockPassenger.removeActivity(activityId);
+        mockPassenger.removeActivity(mockActivity);
         when(passengerRepository.save(any())).thenReturn(mockPassenger);
 
 
-        Optional<Passenger> result = passengerService.removeActivityFromPassenger( passengerId, activityId);
+        passengerService.removeActivityFromPassenger( passengerId, activityId);
 
-        assertNotNull(result);
-        assertFalse(result.get().getActivities().contains(mockActivity));
-        verify(passengerRepository, times(1)).save(mockPassenger);
+        assertFalse(mockPassenger.getActivities().contains(mockActivity));
     }
 }
 

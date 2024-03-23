@@ -33,9 +33,6 @@ public class testActivityServiceImpl {
     @Mock
     private ActivityRepository activityRepository;
 
-    @Mock
-    private DestinationRepository destinationRepository;
-
     @Test
     void testAddActivity() {
         ActivityDTO activityDTO = new ActivityDTO();
@@ -64,7 +61,7 @@ public class testActivityServiceImpl {
         when(activityRepository.findById(id)).thenReturn(Optional.of(new Activity()));
         when(activityRepository.existsById(id)).thenReturn(true);
 
-        Optional<Activity> activity = activityService.getActivity(id);
+        Activity activity = activityService.getActivity(id);
 
         assertNotNull(activity);
     }
@@ -100,13 +97,13 @@ public class testActivityServiceImpl {
         when(activityRepository.save(any(Activity.class))).thenReturn(existingActivity);
 
 
-        Optional<Activity> updatedActivity = activityService.updateActivity(id, activityDTO);
+        Activity updatedActivity = activityService.updateActivity(id, activityDTO);
 
         assertNotNull(updatedActivity);
-        assertEquals("Updated Activity", updatedActivity.get().getName());
-        assertEquals("Test Description", updatedActivity.get().getDescription());
-        assertEquals(50.0, updatedActivity.get().getCost());
-        assertEquals(10, updatedActivity.get().getCapacity());
+        assertEquals("Updated Activity", updatedActivity.getName());
+        assertEquals("Test Description", updatedActivity.getDescription());
+        assertEquals(50.0, updatedActivity.getCost());
+        assertEquals(10, updatedActivity.getCapacity());
     }
 
     @Test

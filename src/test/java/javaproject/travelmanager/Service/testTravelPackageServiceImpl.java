@@ -37,17 +37,15 @@ public class testTravelPackageServiceImpl {
 
     @InjectMocks
     private TravelPackageServiceImpl travelPackageService;
-    @InjectMocks
-    private PassengerServiceImpl passengerService;
 
     @Mock
     private TravelPackageRepository travelPackageRepository;
 
     @Mock
-    private PassengerRepository passengerRepository;
+    private PassengerService passengerService;
 
     @Mock
-    private DestinationRepository destinationRepository;
+    private DestinationService destinationService;
 
 
 
@@ -65,15 +63,13 @@ public class testTravelPackageServiceImpl {
         Long destinationId = mockDestination.getId();
 
         when(travelPackageRepository.findById(any())).thenReturn(Optional.of(mockTravelPackage));
-        when(destinationRepository.findById(any())).thenReturn(Optional.of(mockDestination));
+        when(destinationService.getDestination(any())).thenReturn(mockDestination);
         when(travelPackageRepository.save(any())).thenReturn(mockTravelPackage);
 
 
-        TravelPackage result = travelPackageService.addDestinationToTravelPackage(travelPackageId, destinationId);
+        travelPackageService.addDestinationToTravelPackage(travelPackageId, destinationId);
 
-        assertNotNull(result);
-        assertTrue(result.getDestinations().contains(mockDestination));
-        verify(travelPackageRepository, times(1)).save(mockTravelPackage);
+        assertTrue(mockTravelPackage.getDestinations().contains(mockDestination));
     }
 
     @Test
@@ -89,20 +85,13 @@ public class testTravelPackageServiceImpl {
 
         when(travelPackageRepository.save(any())).thenReturn(mockTravelPackage);
         when(travelPackageRepository.findById(travelPackageId)).thenReturn(Optional.of(mockTravelPackage));
-        when(destinationRepository.findById(destinationId)).thenReturn(Optional.of(mockDestination));
+        when(destinationService.getDestination(destinationId)).thenReturn(mockDestination);
 
 
-        TravelPackage result = travelPackageService.removeDestinationFromTravelPackage(travelPackageId, destinationId);
+        travelPackageService.removeDestinationFromTravelPackage(travelPackageId, destinationId);
 
-        assertNotNull(result);
-        assertFalse(result.getDestinations().contains(mockDestination));
-        verify(travelPackageRepository, times(1)).save(mockTravelPackage);
+        assertFalse(mockTravelPackage.getDestinations().contains(mockDestination));
     }
-
-
-
-
-
 
     @Test
     void testAddPassengerToTravelPackage() {
@@ -110,17 +99,15 @@ public class testTravelPackageServiceImpl {
         Long passengerId = 1L;
 
         TravelPackage mockTravelPackage = new TravelPackage();
-        Passenger mockPassenger =  new StandardPassenger("Test Passenger2","123456",PassengerType.GOLD,10000);
+        Passenger mockPassenger =  new Passenger("Test Passenger2","123456",PassengerType.GOLD,10000);
 
         when(travelPackageRepository.findById(travelPackageId)).thenReturn(Optional.of(mockTravelPackage));
-        when(passengerRepository.findById(passengerId)).thenReturn(Optional.of(mockPassenger));
+        when(passengerService.getPassenger(passengerId)).thenReturn(mockPassenger);
         when(travelPackageRepository.save(any())).thenReturn(mockTravelPackage);
 
-        TravelPackage result = travelPackageService.addPassengerToTravelPackage(travelPackageId, passengerId);
+        travelPackageService.addPassengerToTravelPackage(travelPackageId, passengerId);
 
-        assertNotNull(result);
-        assertTrue(result.getPassengers().contains(mockPassenger));
-        verify(travelPackageRepository, times(1)).save(mockTravelPackage);
+        assertTrue(mockTravelPackage.getPassengers().contains(mockPassenger));
     }
 
     @Test
@@ -129,18 +116,16 @@ public class testTravelPackageServiceImpl {
         Long passengerId = 1L;
 
         TravelPackage mockTravelPackage = new TravelPackage();
-        Passenger passenger =  new StandardPassenger("Test Passenger2","123456",PassengerType.GOLD,10000);
+        Passenger passenger =  new Passenger("Test Passenger2","123456",PassengerType.GOLD,10000);
         passenger.setId(passengerId);
 
         when(travelPackageRepository.findById(travelPackageId)).thenReturn(Optional.of(mockTravelPackage));
-        when(passengerRepository.findById(passengerId)).thenReturn(Optional.of(passenger));
+        when(passengerService.getPassenger(passengerId)).thenReturn(passenger);
         when(travelPackageRepository.save(any())).thenReturn(mockTravelPackage);
 
-        TravelPackage result = travelPackageService.removePassengerFromTravelPackage(travelPackageId, passengerId);
+        travelPackageService.removePassengerFromTravelPackage(travelPackageId, passengerId);
 
-        assertNotNull(result);
-        assertFalse(result.getPassengers().contains(passenger));
-        verify(travelPackageRepository, times(1)).save(mockTravelPackage);
+        assertFalse(mockTravelPackage.getPassengers().contains(passenger));
     }
 
     @Test
@@ -174,8 +159,8 @@ public class testTravelPackageServiceImpl {
         destination1.setId(1L);
         destination2.setId(2L);
         List<Long> passengersId = List.of(3L, 4L);
-        Passenger passenger1 =  new StandardPassenger("Test Passenger1","12345",PassengerType.STANDARD,20000);
-        Passenger passenger2 =  new StandardPassenger("Test Passenger2","123456",PassengerType.GOLD,10000);
+        Passenger passenger1 =  new Passenger("Test Passenger1","12345",PassengerType.STANDARD,20000);
+        Passenger passenger2 =  new Passenger("Test Passenger2","123456",PassengerType.GOLD,10000);
         passenger1.setId(3L);
         passenger2.setId(4L);
         travelPackageDTO.setDestinationsIds(destinationsId);
@@ -183,18 +168,16 @@ public class testTravelPackageServiceImpl {
 
         TravelPackage mockTravelPackage = new TravelPackage();
         // Mock behavior of destinationRepository and passengerRepository
-        when(destinationRepository.findById(1L)).thenReturn(Optional.of(destination1));
-        when(destinationRepository.findById(2L)).thenReturn(Optional.of(destination2));
-        when(passengerRepository.findById(3L)).thenReturn(Optional.of(passenger1));
-        when(passengerRepository.findById(4L)).thenReturn(Optional.of(passenger2));
+        when(destinationService.getDestination(1L)).thenReturn(destination1);
+        when(destinationService.getDestination(2L)).thenReturn(destination2);
+        when(passengerService.getPassenger(3L)).thenReturn(passenger1);
+        when(passengerService.getPassenger(4L)).thenReturn(passenger2);
         when(travelPackageRepository.save(any())).thenReturn(mockTravelPackage);
 
         // Call the method to be tested
         travelPackageService.createTravelPackage(travelPackageDTO);
 
         // Verify behavior
-        verify(destinationRepository, times(2)).findById(any());
-        verify(passengerRepository, times(2)).findById(any());
         verify(travelPackageRepository, times(1)).save(any(TravelPackage.class));
     }
 

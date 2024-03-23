@@ -103,8 +103,12 @@ public class TravelPackageServiceImpl implements TravelPackageService {
     @Override
     public void addPassengerToTravelPackage(Long travelPackageId, Long passengerId) {
         TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId).orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
-        Passenger passenger = passengerService.getPassenger(passengerId);
-        travelPackage.addPassenger(passenger);
+        int passengerCapacity = travelPackage.getPassengerCapacity();
+        int passengers = travelPackage.getPassengers().size();
+        if (passengerCapacity > passengers){
+            Passenger passenger = passengerService.getPassenger(passengerId);
+            travelPackage.addPassenger(passenger);
+        }
     }
 
     @Override
