@@ -5,6 +5,7 @@ import javaproject.travelmanager.DTO.DestinationDTO;
 import javaproject.travelmanager.DTO.PassengerDTO;
 import javaproject.travelmanager.Entity.*;
 import javaproject.travelmanager.Exception.ActivityNotFoundException;
+import javaproject.travelmanager.Exception.InsufficientActivityCapacityException;
 import javaproject.travelmanager.Exception.InsufficientBalanceException;
 import javaproject.travelmanager.Repository.ActivityRepository;
 import javaproject.travelmanager.Repository.DestinationRepository;
@@ -46,7 +47,7 @@ public class testPassengerServiceImpl {
     private ActivityRepository activityRepository;
 
     @Test
-    void testAddPassenger() throws InsufficientBalanceException {
+    void testAddPassenger() throws InsufficientBalanceException, InsufficientActivityCapacityException {
         PassengerDTO passengerDTO = new PassengerDTO();
         passengerDTO.setName("Test Passenger");
         passengerDTO.setPassengerNumber("12345");
@@ -98,7 +99,7 @@ public class testPassengerServiceImpl {
         assertEquals(2, passengers.size());
     }
     @Test
-    void testUpdatePassenger() throws InsufficientBalanceException {
+    void testUpdatePassenger() throws InsufficientBalanceException, InsufficientActivityCapacityException {
         // Mock data
         Long passengerId = 1L;
         PassengerDTO passengerDTO = new PassengerDTO();
@@ -165,7 +166,7 @@ void testDeletePassenger() {
 }
 
     @Test
-    void testAddActivityToPassenger() throws InsufficientBalanceException {
+    void testAddActivityToPassenger() throws InsufficientBalanceException, InsufficientActivityCapacityException {
         Long passengerId = 1L;
         Long activityId = 1L;
 
@@ -178,13 +179,13 @@ void testDeletePassenger() {
         when(passengerRepository.findById(passengerId)).thenReturn(Optional.of(mockPassenger));
         when(passengerRepository.save(any())).thenReturn(mockPassenger);
 
-        Passenger result = passengerService.addActivityToPassenger( passengerId, activityId);
+        Optional<Passenger> result = passengerService.addActivityToPassenger( passengerId, activityId);
 
         assertNotNull(result);
         assertTrue(mockPassenger.getActivities().contains(mockActivity));
     }
     @Test
-    void testRemoveActivityFromPassenger() throws InsufficientBalanceException, ActivityNotFoundException {
+    void testRemoveActivityFromPassenger() throws InsufficientBalanceException, ActivityNotFoundException, InsufficientActivityCapacityException {
         Long passengerId = 1L;
         Long activityId = 1L;
 
@@ -199,10 +200,10 @@ void testDeletePassenger() {
         when(passengerRepository.save(any())).thenReturn(mockPassenger);
 
 
-        Passenger result = passengerService.removeActivityFromPassenger( passengerId, activityId);
+        Optional<Passenger> result = passengerService.removeActivityFromPassenger( passengerId, activityId);
 
         assertNotNull(result);
-        assertFalse(result.getActivities().contains(mockActivity));
+        assertFalse(result.get().getActivities().contains(mockActivity));
         verify(passengerRepository, times(1)).save(mockPassenger);
     }
 }

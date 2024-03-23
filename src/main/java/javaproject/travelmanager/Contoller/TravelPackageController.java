@@ -6,6 +6,7 @@ import javaproject.travelmanager.Entity.Destination;
 import javaproject.travelmanager.Entity.Passenger;
 import javaproject.travelmanager.Entity.TravelPackage;
 import javaproject.travelmanager.Exception.ActivityNotFoundException;
+import javaproject.travelmanager.Exception.InsufficientActivityCapacityException;
 import javaproject.travelmanager.Exception.InsufficientBalanceException;
 import javaproject.travelmanager.Service.DestinationService;
 import javaproject.travelmanager.Service.PassengerService;
@@ -119,7 +120,7 @@ public class TravelPackageController {
     public ResponseEntity<TravelPackage> addActivityToPassenger(
             @PathVariable Long travelPackageId,
             @PathVariable Long passengerId,
-            @PathVariable Long activityId) throws InsufficientBalanceException {
+            @PathVariable Long activityId) throws InsufficientBalanceException, InsufficientActivityCapacityException {
 
         Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
         if (travelPackage.isPresent()) {
@@ -167,7 +168,7 @@ public class TravelPackageController {
     public ResponseEntity<TravelPackage> addActivitiesToPassenger(
             @PathVariable Long travelPackageId,
             @PathVariable Long passengerId,
-            @RequestBody List<Long> activitiesIds) throws InsufficientBalanceException {
+            @RequestBody List<Long> activitiesIds) throws InsufficientBalanceException, InsufficientActivityCapacityException {
 
         Optional<TravelPackage> travelPackage = travelPackageService.getTravelPackage(travelPackageId);
         if (travelPackage.isPresent()) {

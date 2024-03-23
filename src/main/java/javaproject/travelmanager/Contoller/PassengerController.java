@@ -2,6 +2,7 @@ package javaproject.travelmanager.Contoller;
 
 import javaproject.travelmanager.DTO.PassengerDTO;
 import javaproject.travelmanager.Entity.Passenger;
+import javaproject.travelmanager.Exception.InsufficientActivityCapacityException;
 import javaproject.travelmanager.Exception.InsufficientBalanceException;
 import javaproject.travelmanager.Service.PassengerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class PassengerController {
      * or HTTP status 500 (Internal Server Error) if an error occurs during creation.
      */
     @PostMapping("/add")
-    public ResponseEntity<Passenger> createPassenger(@RequestBody PassengerDTO passengerDTO) throws InsufficientBalanceException {
+    public ResponseEntity<Passenger> createPassenger(@RequestBody PassengerDTO passengerDTO) throws InsufficientBalanceException, InsufficientActivityCapacityException {
         Passenger createdPassenger = passengerService.createPassenger(passengerDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPassenger);
     }
@@ -43,8 +44,8 @@ public class PassengerController {
      * or HTTP status 404 (Not Found) if the passenger does not exist.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Passenger> getPassengerById(@PathVariable Long id) {
-        Optional<Passenger> passenger = passengerService.getPassenger(id);
+    public ResponseEntity<? extends Passenger> getPassengerById(@PathVariable Long id) {
+        Optional<? extends Passenger> passenger = passengerService.getPassenger(id);
         return passenger.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -55,8 +56,8 @@ public class PassengerController {
      * or HTTP status 204 (No Content) if no passengers exist.
      */
     @GetMapping("/all")
-    public ResponseEntity<List<Passenger>> getAllPassengers() {
-        List<Passenger> passengers = passengerService.getAllPassengers();
+    public ResponseEntity<List<? extends Passenger>> getAllPassengers() {
+        List<? extends Passenger> passengers = passengerService.getAllPassengers();
         if (!passengers.isEmpty()) {
             return ResponseEntity.ok(passengers);
         } else {
@@ -67,14 +68,14 @@ public class PassengerController {
     /**
      * Updates an existing passenger.
      *
-     * @param id             The ID of the passenger to update.
-     * @param passengerDTO   The DTO representing the updated passenger.
+     * @param id           The ID of the passenger to update.
+     * @param passengerDTO The DTO representing the updated passenger.
      * @return ResponseEntity containing the updated passenger and HTTP status 200 (OK) if successful,
      * or HTTP status 404 (Not Found) if the passenger does not exist.
      */
     @PostMapping("/edit/{id}")
-    public ResponseEntity<Passenger> updatePassenger(@PathVariable Long id, @RequestBody PassengerDTO passengerDTO) throws InsufficientBalanceException {
-        Optional<Passenger> updatedPassenger = passengerService.updatePassenger(id, passengerDTO);
+    public ResponseEntity<? extends Passenger> updatePassenger(@PathVariable Long id, @RequestBody PassengerDTO passengerDTO) throws InsufficientBalanceException, InsufficientActivityCapacityException {
+        Optional<? extends Passenger> updatedPassenger = passengerService.updatePassenger(id, passengerDTO);
         return updatedPassenger.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 
     }

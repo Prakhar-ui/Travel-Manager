@@ -1,6 +1,5 @@
 package javaproject.travelmanager.Service.Implementation;
 
-import jakarta.validation.constraints.*;
 import javaproject.travelmanager.DTO.*;
 import javaproject.travelmanager.Entity.*;
 import javaproject.travelmanager.Repository.*;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.validation.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,105 +22,94 @@ import java.util.Optional;
 public class ActivityServiceImpl implements ActivityService {
 
 
-    private final DestinationRepository destinationRepository;
     private final ActivityRepository activityRepository;
+    private final DestinationService destinationService;
 
-    /**
-     * Constructs a new DestinationServiceImpl with the provided repositories.
-     *
-     * @param destinationRepository The repository for managing destination entities.
-     * @param activityRepository    The repository for managing activity entities.
-     */
     @Autowired
-    public ActivityServiceImpl(DestinationRepository destinationRepository, ActivityRepository activityRepository) {
-        this.destinationRepository = destinationRepository;
+    public ActivityServiceImpl( ActivityRepository activityRepository, DestinationService destinationService) {
         this.activityRepository = activityRepository;
+        this.destinationService = destinationService;
     }
 
-    /**
-     * Adds a new activity.
-     *
-     * @param activityDTO The DTO containing activity details.
-     * @return The newly created activity.
-     * @throws IllegalArgumentException if any of the required parameters are missing or invalid.
-     */
+
     @Override
-    public Activity createActivity(@Valid @NotNull ActivityDTO activityDTO) {
-        Activity newActivity = new Activity(activityDTO.getName(), activityDTO.getDescription(), activityDTO.getCost(), activityDTO.getCapacity());
+    public Activity createActivity(ActivityDTO activityDTO) {
+        String name = activityDTO.getName();
+        String description = activityDTO.getDescription();
+        int capacity = activityDTO.getCapacity();
+        double cost = activityDTO.getCost();
+        Long destinationId = activityDTO.getDestinationId();
 
-        if (activityDTO.getDestinationId() != null) {
-            Optional<Destination> destinationOptional = destinationRepository.findById(activityDTO.getDestinationId());
-            Destination destination = destinationOptional.orElseThrow(() -> new IllegalArgumentException("Destination with ID " + activityDTO.getDestinationId() + " not found."));
-            newActivity.setDestination(destination);
+        Activity activity = new Activity();
+        activity.setName(name);
+        activity.setDescription(description);
+        activity.setCapacity(capacity);
+        activity.setCost(cost);
+        if (destinationId != null){
+            Destination destination = destinationService.getDestination(destinationId);
+            activity.setDestination(destination);
         }
-
-        return activityRepository.save(newActivity);
-
+        return activityRepository.save(activity);
     }
 
-    /**
-     * Retrieves an activity by its ID.
-     *
-     * @param id The ID of the activity to retrieve.
-     * @return The activity if found, otherwise null.
-     */
     @Override
-    public Optional<Activity> getActivity(@NotNull Long id) {
-        if (!activityRepository.existsById(id)) {
-            throw new IllegalArgumentException("Activity with ID " + id + " not found.");
+    public Activity updateActivity(Long activityId, ActivityDTO activityDTO) {
+        String name = activityDTO.getName();
+        String description = activityDTO.getDescription();
+        int capacity = activityDTO.getCapacity();
+        double cost = activityDTO.getCost();
+        Long destinationId = activityDTO.getDestinationId();
+
+        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new IllegalArgumentException("Activity Not present"));
+
+        activity.setName(name);
+        activity.setDescription(description);
+        activity.setCapacity(capacity);
+        activity.setCost(cost);
+        if (destinationId != null){
+            setDestinationToActivity(activity.getId(),destinationId);
         }
-        return activityRepository.findById(id);
+        return activityRepository.save(activity);
     }
 
-    /**
-     * Retrieves all activities.
-     *
-     * @return A list of all activities.
-     */
+    @Override
+    public void setDestinationToActivity(Long activityId, Long destinationId) {
+        Destination destination = destinationService.getDestination(destinationId);
+        Optional<Activity> activity = activityRepository.findById(activityId);
+        if (activity.isPresent()){
+            activity.get().setDestination(destination);
+            activityRepository.save(activity.get());
+        }
+    }
+
+    @Override
+    public Activity getActivity(Long activityId) {
+        Optional<Activity> activity = activityRepository.findById(activityId);
+        return activity.get();
+    }
+
     @Override
     public List<Activity> getAllActivities() {
         return activityRepository.findAll();
     }
 
-    /**
-     * Updates an existing activity.
-     *
-     * @param id          The ID of the activity to update.
-     * @param activityDTO The DTO containing updated activity details.
-     * @return The updated activity if found, otherwise null.
-     * @throws IllegalArgumentException if the provided DestinationDTO is null.
-     */
-    public Optional<Activity> updateActivity(@NotNull Long id, @Valid @NotNull ActivityDTO activityDTO) {
-        if (!activityRepository.existsById(id)) {
-            throw new IllegalArgumentException("Activity with ID " + id + " not found.");
-        }
-
-        return activityRepository.findById(id).map(existingActivity -> {
-            existingActivity.setName(activityDTO.getName());
-            existingActivity.setDescription(activityDTO.getDescription());
-            existingActivity.setCost(activityDTO.getCost());
-            existingActivity.setCapacity(activityDTO.getCapacity());
-
-            if (activityDTO.getDestinationId() != null) {
-                Destination destination = destinationRepository.findById(activityDTO.getDestinationId())
-                        .orElseThrow(() -> new IllegalArgumentException("Destination with ID " + activityDTO.getDestinationId() + " not found."));
-                existingActivity.setDestination(destination);
-            }
-            System.out.println(activityRepository.save(existingActivity));
-            return activityRepository.save(existingActivity);
-        });
+    @Override
+    public Destination getDestinationFromActivity(Long activityId) {
+        Optional<Activity> activity = activityRepository.findById(activityId);
+        return activity.get().getDestination();
     }
 
-    /**
-     * Deletes an activity by its ID.
-     *
-     * @param id The ID of the activity to delete.
-     */
     @Override
-    public void deleteActivity(@NotNull Long id) {
-        if (!activityRepository.existsById(id)) {
-            throw new IllegalArgumentException("Activity with ID " + id + " not found.");
+    public void removeDestinationFromActivity(Long activityId) {
+        Optional<Activity> activity = activityRepository.findById(activityId);
+        if (activity.isPresent()){
+            activity.get().setDestination(null);
+            activityRepository.save(activity.get());
         }
-        activityRepository.deleteById(id);
+    }
+
+    @Override
+    public void deleteActivity(Long activityId) {
+        activityRepository.deleteById(activityId);
     }
 }

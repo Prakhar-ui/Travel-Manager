@@ -10,10 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Component
 public class DataLoader implements CommandLineRunner {
@@ -87,9 +84,6 @@ public class DataLoader implements CommandLineRunner {
         activity6.setCost(2000.0);
         activity6.setCapacity(5);
 
-
-
-
         Activity savedActivity1 = activityService.createActivity(activity1);
         Activity savedActivity2 = activityService.createActivity(activity2);
         Activity savedActivity3 = activityService.createActivity(activity3);
@@ -98,12 +92,12 @@ public class DataLoader implements CommandLineRunner {
         Activity savedActivity6 = activityService.createActivity(activity6);
 
         // Fetch destinations from the database
-        savedDestination1 = destinationService.addActivityToDestination(savedDestination1.getId(),savedActivity1.getId());
-        savedDestination1 = destinationService.addActivityToDestination(savedDestination1.getId(),savedActivity2.getId());
-        savedDestination2 = destinationService.addActivityToDestination(savedDestination2.getId(),savedActivity3.getId());
-        savedDestination2 = destinationService.addActivityToDestination(savedDestination2.getId(),savedActivity4.getId());
-        savedDestination3 = destinationService.addActivityToDestination(savedDestination3.getId(),savedActivity5.getId());
-        savedDestination3 = destinationService.addActivityToDestination(savedDestination3.getId(),savedActivity6.getId());
+        destinationService.addActivityToDestination(savedDestination1.getId(),savedActivity1.getId());
+        destinationService.addActivityToDestination(savedDestination1.getId(),savedActivity2.getId());
+        destinationService.addActivityToDestination(savedDestination2.getId(),savedActivity3.getId());
+        destinationService.addActivityToDestination(savedDestination2.getId(),savedActivity4.getId());
+        destinationService.addActivityToDestination(savedDestination3.getId(),savedActivity5.getId());
+        destinationService.addActivityToDestination(savedDestination3.getId(),savedActivity6.getId());
 
 
         // Create sample passengers
@@ -121,12 +115,13 @@ public class DataLoader implements CommandLineRunner {
         passenger3.setName("Amit");
         passenger3.setPassengerNumber("5678901234");
         passenger3.setPassengerType(PassengerType.PREMIUM);
-        passenger2.setBalance(0);
+        passenger3.setBalance(0);
 
 
         Passenger savedPassenger1 = passengerService.createPassenger(passenger1);
         Passenger savedPassenger2 = passengerService.createPassenger(passenger2);
         Passenger savedPassenger3 = passengerService.createPassenger(passenger3);
+
 
         // Create sample travel packages
         TravelPackageDTO package1 = new TravelPackageDTO();
@@ -135,39 +130,37 @@ public class DataLoader implements CommandLineRunner {
 
         TravelPackage savedTravelPackage = travelPackageService.createTravelPackage(package1);
 
-        savedTravelPackage = travelPackageService.addDestinationToTravelPackage(savedTravelPackage.getId(),savedDestination1.getId());
-        savedTravelPackage = travelPackageService.addDestinationToTravelPackage(savedTravelPackage.getId(),savedDestination2.getId());
-        savedTravelPackage = travelPackageService.addDestinationToTravelPackage(savedTravelPackage.getId(),savedDestination3.getId());
+        travelPackageService.addDestinationToTravelPackage(savedTravelPackage.getId(),savedDestination1.getId());
+        travelPackageService.addDestinationToTravelPackage(savedTravelPackage.getId(),savedDestination2.getId());
+        travelPackageService.addDestinationToTravelPackage(savedTravelPackage.getId(),savedDestination3.getId());
 
-        savedTravelPackage = travelPackageService.addPassengerToTravelPackage(savedTravelPackage.getId(),savedPassenger1.getId());
-        savedTravelPackage = travelPackageService.addPassengerToTravelPackage(savedTravelPackage.getId(),savedPassenger2.getId());
-        savedTravelPackage = travelPackageService.addPassengerToTravelPackage(savedTravelPackage.getId(),savedPassenger3.getId());
+        travelPackageService.addPassengerToTravelPackage(savedTravelPackage.getId(),savedPassenger1.getId());
+        travelPackageService.addPassengerToTravelPackage(savedTravelPackage.getId(),savedPassenger2.getId());
+        travelPackageService.addPassengerToTravelPackage(savedTravelPackage.getId(),savedPassenger3.getId());
 
-        savedPassenger1 = passengerService.addTravelPackageToPassenger(savedPassenger1.getId(),savedTravelPackage.getId());
-        savedPassenger2 = passengerService.addTravelPackageToPassenger(savedPassenger2.getId(),savedTravelPackage.getId());
-        savedPassenger3 = passengerService.addTravelPackageToPassenger(savedPassenger3.getId(),savedTravelPackage.getId());
+        passengerService.setTravelPackageToPassenger(savedPassenger1.getId(),savedTravelPackage.getId());
+        passengerService.setTravelPackageToPassenger(savedPassenger2.getId(),savedTravelPackage.getId());
+        passengerService.setTravelPackageToPassenger(savedPassenger3.getId(),savedTravelPackage.getId());
 
-        savedPassenger1 = passengerService.addActivityToPassenger(savedPassenger1.getId(),savedActivity1.getId());
-        savedPassenger1 = passengerService.addActivityToPassenger(savedPassenger1.getId(),savedActivity2.getId());
-        savedPassenger2 = passengerService.addActivityToPassenger(savedPassenger2.getId(),savedActivity3.getId());
-        savedPassenger2 = passengerService.addActivityToPassenger(savedPassenger2.getId(),savedActivity4.getId());
-        savedPassenger3 = passengerService.addActivityToPassenger(savedPassenger3.getId(),savedActivity5.getId());
-        savedPassenger3 = passengerService.addActivityToPassenger(savedPassenger3.getId(),savedActivity6.getId());
-        List<Passenger> passengers = savedTravelPackage.getPassengers();
-
+        passengerService.addActivityToPassenger(savedPassenger1.getId(),savedActivity1.getId());
+        passengerService.addActivityToPassenger(savedPassenger1.getId(),savedActivity2.getId());
+        passengerService.addActivityToPassenger(savedPassenger2.getId(),savedActivity3.getId());
+        passengerService.addActivityToPassenger(savedPassenger2.getId(),savedActivity4.getId());
+        passengerService.addActivityToPassenger(savedPassenger3.getId(),savedActivity5.getId());
+        passengerService.addActivityToPassenger(savedPassenger3.getId(),savedActivity6.getId());
 
         System.out.println("----------------------------------------------------");
         System.out.println("Itinerary - ");
         travelPackagePrintService.printItinerary(savedTravelPackage.getId());
-        System.out.println("----------------------------------------------------");
-        System.out.println("Available activities - ");
-        travelPackagePrintService.printAvailableActivities(savedTravelPackage.getId());
         System.out.println("----------------------------------------------------");
         System.out.println("Passenger List - ");
         travelPackagePrintService.printPassengerList(savedTravelPackage.getId());
         System.out.println("----------------------------------------------------");
         System.out.println("Passenger Details - ");
         travelPackagePrintService.printPassengerDetails(savedTravelPackage.getId());
+        System.out.println("----------------------------------------------------");
+        System.out.println("Available activities - ");
+        travelPackagePrintService.printAvailableActivities(savedTravelPackage.getId());
         System.out.println("----------------------------------------------------");
 
     }

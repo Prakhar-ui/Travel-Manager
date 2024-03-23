@@ -1,5 +1,6 @@
 package javaproject.travelmanager.DTO;
 
+import javaproject.travelmanager.Entity.TravelPackage;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,5 +14,6 @@ import java.util.List;
 @Setter
 public class DestinationDTO {
     private String name;
-    private List<Long> activitiesIDs;
+    private Long travelPackageId;
+    private List<Long> activitiesIds;
 }

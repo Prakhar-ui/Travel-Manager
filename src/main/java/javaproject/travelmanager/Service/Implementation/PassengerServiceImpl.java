@@ -4,12 +4,12 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import javaproject.travelmanager.DTO.PassengerDTO;
 import javaproject.travelmanager.Entity.*;
-import javaproject.travelmanager.Exception.ActivityNotFoundException;
+import javaproject.travelmanager.Exception.InsufficientActivityCapacityException;
 import javaproject.travelmanager.Exception.InsufficientBalanceException;
-import javaproject.travelmanager.Repository.ActivityRepository;
 import javaproject.travelmanager.Repository.PassengerRepository;
-import javaproject.travelmanager.Repository.TravelPackageRepository;
+import javaproject.travelmanager.Service.ActivityService;
 import javaproject.travelmanager.Service.PassengerService;
+import javaproject.travelmanager.Service.TravelPackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,220 +30,186 @@ public class PassengerServiceImpl implements PassengerService {
 
     private final PassengerRepository passengerRepository;
 
-    private final TravelPackageRepository travelPackageRepository;
+    private final TravelPackageService travelPackageService;
 
-    private final ActivityRepository activityRepository;
+    private final ActivityService activityService;
 
     /**
      * Constructs a new PassengerServiceImpl with the provided repositories.
      *
-     * @param travelPackageRepository The repository for managing travel package entities.
+     * @param travelPackageService The repository for managing travel package entities.
      * @param passengerRepository The repository for managing passenger entities.
-     * @param activityRepository    The repository for managing activity entities.
+     * @param activityService    The repository for managing activity entities.
      */
     @Autowired
-    public PassengerServiceImpl(TravelPackageRepository travelPackageRepository, PassengerRepository passengerRepository, ActivityRepository activityRepository) {
-        this.travelPackageRepository = travelPackageRepository;
+    public PassengerServiceImpl(TravelPackageService travelPackageService, PassengerRepository passengerRepository, ActivityService activityService) {
+        this.travelPackageService = travelPackageService;
         this.passengerRepository = passengerRepository;
-        this.activityRepository = activityRepository;
+        this.activityService = activityService;
     }
 
-    /**
-     * Adds a new passenger.
-     *
-     * @param passengerDTO The DTO containing passenger information.
-     * @return The newly created passenger.
-     */
-    @Override
-    public Passenger createPassenger(@Valid @NotNull PassengerDTO passengerDTO) throws InsufficientBalanceException {
-            Passenger passenger = switch (passengerDTO.getPassengerType()) {
-                case STANDARD -> new StandardPassenger(passengerDTO.getName(), passengerDTO.getPassengerNumber(),
-                        passengerDTO.getPassengerType(), passengerDTO.getBalance());
-                case GOLD -> new GoldPassenger(passengerDTO.getName(), passengerDTO.getPassengerNumber(),
-                        passengerDTO.getPassengerType(), passengerDTO.getBalance());
-                case PREMIUM -> new PremiumPassenger(passengerDTO.getName(), passengerDTO.getPassengerNumber(),
-                        passengerDTO.getPassengerType());
-            };
-        List<Long> activitiesIds = passengerDTO.getActivitiesIds();
-        List<Long> travelPackagesIds = passengerDTO.getTravelPackagesIds();
 
+    @Override
+    public Passenger createPassenger(PassengerDTO passengerDTO) {
+        String name = passengerDTO.getName();
+        String passengerNumber = passengerDTO.getPassengerNumber();
+        PassengerType passengerType = passengerDTO.getPassengerType();
+        double balance = passengerDTO.getBalance();
+        Long travelPackageId = passengerDTO.getTravelPackageId();
+        List<Long> activitiesIds = passengerDTO.getActivitiesIds();
+
+        Passenger passenger = new Passenger();
+        passenger.setName(name);
+        passenger.setPassengerNumber(passengerNumber);
+        passenger.setPassengerType(passengerType);
+        passenger.setBalance(balance);
+
+        if (travelPackageId != null) {
+            TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
+            passenger.setTravelPackage(travelPackage);
+        }
         if (activitiesIds != null && !activitiesIds.isEmpty()) {
             for(Long activityId: activitiesIds){
-                Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new IllegalArgumentException("Activity with ID " + activityId + " not found."));
-                passenger.signUpForActivity(activity);
+                Activity activity = activityService.getActivity(activityId);
+                passenger.addActivity(activity);
+                switch (passengerType) {
+                    case STANDARD -> {
+                        passenger.setBalance(balance-activity.getCost());
+                    }
+                    case GOLD -> {
+                        passenger.setBalance(balance-(activity.getCost()*0.9));
+                    }
+                }
             }
         }
 
-        if (travelPackagesIds != null && !travelPackagesIds.isEmpty()) {
-            for(Long travelPackageId: travelPackagesIds){
-                TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId).orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
-                passenger.addTravelPackage(travelPackage);
-            }
-        }
         return passengerRepository.save(passenger);
     }
 
-
-    /**
-     * Retrieves a passenger by its ID.
-     *
-     * @param passengerId The ID of the passenger to retrieve.
-     * @return The passenger, if found; otherwise, null.
-     */
     @Override
-    public Optional<? extends Passenger> getPassenger(@Valid @NotNull Long passengerId) {
-        Optional<Passenger> passengerOptional = passengerRepository.findById(passengerId);
-        if (passengerOptional.isPresent()) {
-            Passenger passenger = passengerOptional.get();
-            switch (passenger) {
-                case GoldPassenger goldPassenger -> {
-                    return Optional.of(goldPassenger);
+    public Passenger updatePassenger(Long passengerId, PassengerDTO passengerDTO) {
+        String name = passengerDTO.getName();
+        String passengerNumber = passengerDTO.getPassengerNumber();
+        PassengerType passengerType = passengerDTO.getPassengerType();
+        double balance = passengerDTO.getBalance();
+        Long travelPackageId = passengerDTO.getTravelPackageId();
+        List<Long> activitiesIds = passengerDTO.getActivitiesIds();
+
+        Passenger passenger = passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
+        passenger.setName(name);
+        passenger.setPassengerNumber(passengerNumber);
+        passenger.setPassengerType(passengerType);
+        passenger.setBalance(balance);
+
+        if (travelPackageId != null) {
+            setTravelPackageToPassenger(passengerId,travelPackageId);
+        }
+        if (activitiesIds != null && !activitiesIds.isEmpty()) {
+            for(Long activityId: activitiesIds){
+                addActivityToPassenger(passengerId,activityId);
+            }
+        }
+
+        return passengerRepository.save(passenger);
+    }
+
+    @Override
+    public void addActivityToPassenger(Long passengerId, Long activityId) {
+        Passenger passenger = passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
+        PassengerType passengerType = passenger.getPassengerType();
+        double balance = passenger.getBalance();
+        Activity activity = activityService.getActivity(activityId);
+        double cost = activity.getCost();
+        int capacity = activity.getCapacity();
+        if (capacity > 0){
+            switch (passengerType) {
+                case STANDARD -> {
+                    if (balance > cost){
+                        passenger.setBalance(balance - cost);
+                        passenger.addActivity(activity);
+                        activity.setCapacity(capacity - 1);
+                    }
                 }
-                case StandardPassenger standardPassenger -> {
-                    return Optional.of(standardPassenger);
+                case GOLD -> {
+                    if (balance > (cost*0.9)){
+                        passenger.setBalance(balance - (cost*0.9));
+                        passenger.addActivity(activity);
+                        activity.setCapacity(capacity - 1);
+                    }
                 }
-                case PremiumPassenger premiumPassenger -> {
-                    return Optional.of(premiumPassenger);
-                }
-                default -> {
+                case PREMIUM -> {
+                    passenger.addActivity(activity);
+                    activity.setCapacity(capacity - 1);
                 }
             }
         }
-        throw new IllegalArgumentException("Passenger with ID " + passengerId + " not found.");
     }
 
-    /**
-     * Retrieves all passengers.
-     *
-     * @return A list of all passengers.
-     */
+    @Override
+    public void setTravelPackageToPassenger(Long passengerId, Long travelPackageId) {
+        Passenger passenger = passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
+        passenger.setTravelPackage(travelPackage);
+    }
+
+    @Override
+    public Passenger getPassenger(Long passengerId) {
+        return passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
+    }
+
     @Override
     public List<Passenger> getAllPassengers() {
         return passengerRepository.findAll();
     }
 
     @Override
-    public List<Activity> getAllActivitiesFromPassenger(@Valid @NotNull Long passengerId) {
-        Passenger passenger = passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger with ID " + passengerId + " not found."));
+    public List<Activity> getAllActivitiesFromPassenger(Long passengerId) {
+        Passenger passenger = passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
         return passenger.getActivities();
     }
 
-    /**
-     * Updates an existing passenger.
-     *
-     * @param passengerId               The ID of the passenger to update.
-     * @param passengerDTO The DTO containing updated passenger information.
-     * @return The updated passenger, if found; otherwise, null.
-     */
     @Override
-    public Optional<Passenger> updatePassenger(@Valid @NotNull Long passengerId, @Valid @NotNull PassengerDTO passengerDTO) throws InsufficientBalanceException {
-        Passenger existingPassenger = passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger with ID " + passengerId + " not found."));
-            existingPassenger.setName(passengerDTO.getName());
-            existingPassenger.setPassengerNumber(passengerDTO.getPassengerNumber());
-            existingPassenger.setPassengerType(passengerDTO.getPassengerType());
-            existingPassenger.setBalance(passengerDTO.getBalance());
+    public TravelPackage getTravelPackageFromPassenger(Long passengerId) {
+        Passenger passenger = passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
+        return passenger.getTravelPackage();
+    }
 
-            List<Long> activitiesIds = passengerDTO.getActivitiesIds();
-            List<Long> travelPackagesIds = passengerDTO.getTravelPackagesIds();
+    @Override
+    public void removeActivityFromPassenger(Long passengerId, Long activityId) {
+        Passenger passenger = passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
+        PassengerType passengerType = passenger.getPassengerType();
+        double balance = passenger.getBalance();
+        Activity activity = activityService.getActivity(activityId);
+        double cost = activity.getCost();
+        int capacity = activity.getCapacity();
+            switch (passengerType) {
+                case STANDARD -> {
+                        passenger.setBalance(balance + cost);
+                        passenger.removeActivity(activity);
+                        activity.setCapacity(capacity + 1);
 
-            if (activitiesIds != null && !activitiesIds.isEmpty()) {
-                for (Long activityId: activitiesIds){
-                    addActivityToPassenger(existingPassenger.getId(),  activityId);
+                }
+                case GOLD -> {
+                        passenger.setBalance(balance + (cost*0.9));
+                        passenger.removeActivity(activity);
+                        activity.setCapacity(capacity + 1);
+                }
+                case PREMIUM -> {
+                    passenger.removeActivity(activity);
+                    activity.setCapacity(capacity + 1);
                 }
             }
-
-            if (travelPackagesIds != null && !travelPackagesIds.isEmpty()) {
-                for (Long travelPackageId: travelPackagesIds){
-                    addTravelPackageToPassenger(existingPassenger.getId(),  travelPackageId);
-                }
-            }
-
-            return Optional.of(passengerRepository.save(existingPassenger));
-    }
-
-    /**
-     * Adds activities to the given passenger based on their IDs.
-     *
-     * @param passengerId The passenger to which activities will be added.
-     * @param activityId  The IDs of the activities to be added to the passenger.
-     * @throws IllegalArgumentException if any of the activities with the given IDs are not found.
-     */
-
-    @Override
-    public Optional<? extends Passenger> addActivityToPassenger(@Valid @NotNull Long passengerId, @Valid @NotNull Long activityId) throws InsufficientBalanceException {
-        Optional<? extends Passenger> passenger = getPassenger(passengerId);
-
-        Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new IllegalArgumentException("Activity with ID " + activityId + " not found."));
-        if (passenger.isPresent()){
-            passenger.get().signUpForActivity(activity);
-            return passengerRepository.save(passenger);
-        }
-
+        passenger.removeActivity(activity);
     }
 
     @Override
-    public Passenger removeActivityFromPassenger( @Valid @NotNull Long passengerId, @Valid @NotNull Long activityId) throws ActivityNotFoundException {
-        Passenger passenger = passengerRepository.findById(passengerId)
-                .orElseThrow(() -> new IllegalArgumentException("Passenger with ID " + passengerId + " not found."));
-
-        Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new IllegalArgumentException("Activity with ID " + activityId + " not found."));
-
-        passenger.removeActivity(activityId);
-
-        return passengerRepository.save(passenger);
+    public void removeTravelPackageFromPassenger(Long passengerId) {
+        Passenger passenger = passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
+        passenger.setTravelPackage(null);
     }
 
-
-
-    /**
-     * Adds activities to the given passenger based on their IDs.
-     *
-     * @param passengerId The passenger to which activities will be added.
-     * @param travelPackageId The IDs of the activities to be added to the passenger.
-     * @throws IllegalArgumentException if any of the activities with the given IDs are not found.
-     */
     @Override
-    public Passenger addTravelPackageToPassenger(@Valid @NotNull Long passengerId, @Valid @NotNull Long travelPackageId) {
-
-        Passenger passenger = passengerRepository.findById(passengerId)
-                .orElseThrow(() -> new IllegalArgumentException("Passenger with ID " + passengerId + " not found."));
-
-        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
-                .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
-
-        passenger.addTravelPackage(travelPackage);
-
-        return passengerRepository.save(passenger);
-    }
-
-
-    @Override
-    public Passenger removeTravelPackageFromPassenger(@Valid @NotNull Long passengerId, @Valid @NotNull Long travelPackageId){
-
-        Passenger passenger = passengerRepository.findById(passengerId)
-                .orElseThrow(() -> new IllegalArgumentException("Passenger with ID " + passengerId + " not found."));
-
-        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
-                .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
-
-        passenger.removeTravelPackage(travelPackageId);
-
-        return passengerRepository.save(passenger);
-    }
-
-
-    /**
-     * Deletes a passenger by its ID.
-     *
-     * @param passengerId The ID of the passenger to delete.
-     */
-    @Override
-    public void deletePassenger(@Valid @NotNull Long passengerId) {
-        if (!passengerRepository.existsById(passengerId)) {
-            throw new IllegalArgumentException("Passenger with ID " + passengerId + " not found.");
-        }
+    public void deletePassenger(Long passengerId) {
         passengerRepository.deleteById(passengerId);
     }
 }

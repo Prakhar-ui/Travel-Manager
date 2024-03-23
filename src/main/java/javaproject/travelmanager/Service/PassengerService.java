@@ -1,92 +1,42 @@
 package javaproject.travelmanager.Service;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import javaproject.travelmanager.DTO.PassengerDTO;
 import javaproject.travelmanager.Entity.Activity;
 import javaproject.travelmanager.Entity.Passenger;
+import javaproject.travelmanager.Entity.TravelPackage;
 import javaproject.travelmanager.Exception.ActivityNotFoundException;
+import javaproject.travelmanager.Exception.InsufficientActivityCapacityException;
 import javaproject.travelmanager.Exception.InsufficientBalanceException;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Service interface responsible for handling operations related to passengers.
  */
 public interface PassengerService {
 
-    /**
-     * Creates a new passenger.
-     *
-     * @param passengerDTO The DTO containing passenger information.
-     * @return The newly created passenger.
-     */
-    Passenger createPassenger(PassengerDTO passengerDTO) throws InsufficientBalanceException;
 
-    /**
-     * Retrieves a passenger by its ID.
-     *
-     * @param passengerId The ID of the passenger to retrieve.
-     * @return The passenger if found, otherwise empty.
-     */
-    Optional<? extends Passenger> getPassenger(Long passengerId);
+    Passenger createPassenger(PassengerDTO passengerDTO);
 
-    /**
-     * Retrieves all passengers.
-     *
-     * @return A list of all passengers.
-     */
+    Passenger updatePassenger(Long passengerId, PassengerDTO passengerDTO);
+
+    void addActivityToPassenger(Long passengerId, Long activityId);
+
+    void setTravelPackageToPassenger(Long passengerId, Long travelPackageId);
+
+    Passenger getPassenger(Long passengerId);
+
     List<Passenger> getAllPassengers();
 
     List<Activity> getAllActivitiesFromPassenger(Long passengerId);
 
+    TravelPackage getTravelPackageFromPassenger(Long passengerId);
 
+    void removeActivityFromPassenger(Long passengerId, Long activityId) ;
 
-    /**
-     * Updates an existing passenger.
-     *
-     * @param passengerId The ID of the passenger to update.
-     * @param passengerDTO The DTO containing updated passenger information.
-     * @return The updated passenger if found, otherwise empty.
-     */
-    Optional<Passenger> updatePassenger(Long passengerId, PassengerDTO passengerDTO) throws InsufficientBalanceException;
+    void removeTravelPackageFromPassenger(Long passengerId);
 
-    /**
-     * Adds an activity to a passenger.
-     *
-     * @param passengerId The ID of the passenger.
-     * @param activityId  The ID of the activity to add.
-     */
-    Optional<? extends Passenger> addActivityToPassenger(Long passengerId, Long activityId) throws InsufficientBalanceException;
-
-    /**
-     * Removes an activity from a passenger.
-     *
-     * @param passengerId The ID of the passenger.
-     * @param activityId The ID of the activity to remove.
-     */
-    Passenger removeActivityFromPassenger( Long passengerId, Long activityId) throws ActivityNotFoundException;
-
-    /**
-     * Adds an activity to a passenger.
-     *
-     * @param passengerId The ID of the passenger.
-     * @param travelPackageId The ID of the activity to add.
-     */
-    Passenger addTravelPackageToPassenger(Long passengerId, Long travelPackageId);
-
-
-    /**
-     * Removes an activity from a passenger.
-     *
-     * @param passengerId The ID of the passenger.
-     * @param travelPackageId The ID of the activity to remove.
-     */
-    Passenger removeTravelPackageFromPassenger(Long passengerId, Long travelPackageId);
-
-    /**
-     * Deletes a passenger by its ID.
-     *
-     * @param passengerId The ID of the passenger to delete.
-     */
     void deletePassenger(Long passengerId);
 }

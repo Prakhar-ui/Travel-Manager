@@ -10,6 +10,7 @@ import javaproject.travelmanager.Repository.TravelPackageRepository;
 import javaproject.travelmanager.Service.DestinationService;
 import javaproject.travelmanager.Service.PassengerService;
 import javaproject.travelmanager.Service.TravelPackagePrintService;
+import javaproject.travelmanager.Service.TravelPackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,31 +20,16 @@ import java.util.List;
 @Service
 @Transactional
 public class TravelPackagePrintServiceImpl implements TravelPackagePrintService {
-    private final TravelPackageRepository travelPackageRepository;
+    private final TravelPackageService travelPackageService;
 
-    private final PassengerRepository passengerRepository;
+    private final PassengerService passengerService;
 
-    private final DestinationRepository destinationRepository;
+    private final DestinationService destinationService;
 
-
-    /**
-     * Constructs a new TravelPackageServiceImpl with the provided repositories.
-     *
-     * @param travelPackageRepository The repository for managing travel package entities.
-     * @param passengerRepository     The repository for managing passenger entities.
-     * @param destinationRepository  The repository for managing destination entities.
-     */
-    @Autowired
-    public TravelPackagePrintServiceImpl(TravelPackageRepository travelPackageRepository,
-                                    PassengerRepository passengerRepository,
-                                    DestinationRepository destinationRepository,
-                                    ActivityRepository activityRepository,
-                                    PassengerService passengerService,
-                                    DestinationService destinationService
-    ) {
-        this.travelPackageRepository = travelPackageRepository;
-        this.passengerRepository = passengerRepository;
-        this.destinationRepository = destinationRepository;
+    public TravelPackagePrintServiceImpl(TravelPackageService travelPackageService, PassengerService passengerService, DestinationService destinationService) {
+        this.travelPackageService = travelPackageService;
+        this.passengerService = passengerService;
+        this.destinationService = destinationService;
     }
 
     /**
@@ -51,8 +37,7 @@ public class TravelPackagePrintServiceImpl implements TravelPackagePrintService 
      */
     @Override
     public void printItinerary(@Valid @NotNull Long travelPackageId) {
-        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
-                .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
 
         String travelPackageName = travelPackage.getName();
 
@@ -78,8 +63,8 @@ public class TravelPackagePrintServiceImpl implements TravelPackagePrintService 
      */
     @Override
     public void printPassengerList(@Valid @NotNull Long travelPackageId) {
-        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
-                .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
+
 
         String travelPackageName = travelPackage.getName();
 
@@ -101,8 +86,7 @@ public class TravelPackagePrintServiceImpl implements TravelPackagePrintService 
      */
     @Override
     public void printPassengerDetails(@Valid @NotNull Long travelPackageId) {
-        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
-                .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
 
         String travelPackageName = travelPackage.getName();
 
@@ -122,8 +106,10 @@ public class TravelPackagePrintServiceImpl implements TravelPackagePrintService 
                 System.out.println("    Destination: " + activity.getDestination().getName());
                 if (passenger.getPassengerType() == PassengerType.PREMIUM){
                     System.out.println("    Price Paid: " + "Free for Premium Passengers");
+                } else if (passenger.getPassengerType() == PassengerType.GOLD){
+                    System.out.println("    Price Paid: " + (activity.getCost()* 0.9));
                 } else {
-                    System.out.println("    Price Paid: " + activity.getCost());
+                        System.out.println("    Price Paid: " + activity.getCost());
                 }
             }
         }
@@ -134,8 +120,7 @@ public class TravelPackagePrintServiceImpl implements TravelPackagePrintService 
      */
     @Override
     public void printAvailableActivities(@Valid @NotNull Long travelPackageId) {
-        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
-                .orElseThrow(() -> new IllegalArgumentException("Travel Package with ID " + travelPackageId + " not found."));
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
 
         String travelPackageName = travelPackage.getName();
 
@@ -145,7 +130,7 @@ public class TravelPackagePrintServiceImpl implements TravelPackagePrintService 
         int totalAvailableSpaces = 0;
         for (Destination destination : destinations) {
             for (Activity activity : destination.getActivities()) {
-                int availableSpaces = activity.getRemaining();
+                int availableSpaces = activity.getCapacity();
                 if (availableSpaces > 0) {
                     totalAvailableSpaces += availableSpaces;
                     System.out.println("- Activity Name: " + activity.getName());

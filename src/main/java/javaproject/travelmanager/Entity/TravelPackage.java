@@ -34,19 +34,14 @@ public class TravelPackage {
      * Represents the list of destinations included in the travel package.
      * Each travel package can have multiple destinations.
      */
-    @ManyToMany
-    @JoinTable(
-            name = "travel_package_destinations",
-            joinColumns = @JoinColumn(name = "travel_package_id"),
-            inverseJoinColumns = @JoinColumn(name = "destination_id")
-    )
+    @OneToMany(mappedBy = "travelPackage", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Destination> destinations = new ArrayList<>();
 
     /**
      * Represents the list of passengers enrolled in the travel package.
      * Each travel package can have multiple passengers.
      */
-    @ManyToMany(mappedBy = "travelPackages")
+    @OneToMany(mappedBy = "travelPackage", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Passenger> passengers = new ArrayList<>();
 
     /**
@@ -66,22 +61,16 @@ public class TravelPackage {
      * @param destination The destination to add.
      */
     public void addDestination(Destination destination) {
-        Optional<Destination> optionalDestination = this.destinations.stream()
-                .filter(newDestination -> newDestination.getId().equals(destination.getId()))
-                .findFirst();
-
-        if (optionalDestination.isEmpty()) {
-            this.destinations.add(destination);
-        }
+        this.destinations.add(destination);
     }
 
     /**
      * Removes a destination from the travel package by ID.
      *
-     * @param destinationId The ID of the destination to remove.
+     * @param destination The destination to remove.
      */
-    public void removeDestination(Long destinationId) {
-        this.destinations.removeIf(destination -> destination.getId().equals(destinationId));
+    public void removeDestination(Destination destination) {
+        this.destinations.remove(destination);
     }
 
     /**
@@ -90,23 +79,17 @@ public class TravelPackage {
      * @param passenger The passenger to add.
      */
     public void addPassenger(Passenger passenger) {
-        Optional<Passenger> optionalPassenger = this.passengers.stream()
-                .filter(newPassenger -> newPassenger.getId().equals(passenger.getId()))
-                .findFirst();
-
-        if (optionalPassenger.isEmpty()) {
-            this.passengers.add(passenger);
-        }
+        this.passengers.add(passenger);
     }
 
 
     /**
      * Removes a passenger from the travel package by ID.
      *
-     * @param passengerId The ID of the passenger to remove.
+     * @param passenger The passenger to remove.
      */
-    public void removePassenger(Long passengerId) {
-        this.passengers.removeIf(passenger -> passenger.getId().equals(passengerId));
+    public void removePassenger(Passenger passenger) {
+        this.passengers.remove(passenger);
     }
 
 }

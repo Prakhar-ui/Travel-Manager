@@ -3,6 +3,7 @@ package javaproject.travelmanager.Entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import javaproject.travelmanager.Exception.ActivityNotFoundException;
+import javaproject.travelmanager.Exception.InsufficientActivityCapacityException;
 import javaproject.travelmanager.Exception.InsufficientBalanceException;
 import lombok.*;
 
@@ -15,8 +16,7 @@ import java.util.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-public abstract class Passenger {
+public class Passenger {
     /**
      * The unique identifier of the passenger.
      */
@@ -35,24 +35,22 @@ public abstract class Passenger {
     private String passengerNumber;
 
     /**
+     * The balance of the passenger (applicable for standard and gold passengers).
+     */
+    private double balance;
+
+    /**
      * The type of the passenger (standard, gold, or premium).
      */
     @Enumerated(EnumType.STRING)
     private PassengerType passengerType;
 
     /**
-     * The balance of the passenger (applicable for standard and gold passengers).
-     */
-    private double balance;
-
-    /**
      * The list of travel packages associated with the passenger.
      */
-    @ManyToMany
-    @JoinTable(name = "Passenger_travelPackages",
-            joinColumns = @JoinColumn(name = "passenger_id"))
-    @JsonIgnore
-    private List<TravelPackage> travelPackages = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "travel_package_id")
+    private TravelPackage travelPackage;
 
     /**
      * The list of activities associated with the passenger.
@@ -81,40 +79,21 @@ public abstract class Passenger {
     }
 
     /**
-     * Adds an activity to the passenger.
+     * Adds a passenger to the travel package.
      *
-     * @param activity The activity to add.
+     * @param activity The passenger to add.
      */
-    public abstract void signUpForActivity(Activity activity) throws InsufficientBalanceException;
-
-    /**
-     * Removes an activity to the passenger.
-     *
-     * @param activityId The activity to add.
-     */
-    public abstract void removeActivity(Long activityId) throws ActivityNotFoundException;
-
-    /**
-     * Adds a travel package to the passenger.
-     *
-     * @param travelPackage The travel package to add.
-     */
-    public void addTravelPackage(TravelPackage travelPackage) {
-        Optional<TravelPackage> optionalTravelPackage = this.travelPackages.stream()
-                .filter(newTravelPackage -> newTravelPackage.getId().equals(travelPackage.getId()))
-                .findFirst();
-
-        if (optionalTravelPackage.isEmpty()) {
-            this.travelPackages.add(travelPackage);
-        }
+    public void addActivity(Activity activity) {
+        this.activities.add(activity);
     }
 
+
     /**
-     * Removes a travel package from the passenger.
+     * Removes a activity from the travel package by ID.
      *
-     * @param travelPackageId The travel package to remove.
+     * @param activity The passenger to remove.
      */
-    public void removeTravelPackage(Long travelPackageId) {
-        this.travelPackages.removeIf(travelPackage -> travelPackage.getId().equals(travelPackageId));
+    public void removeActivity(Activity activity) {
+        this.activities.remove(activity);
     }
 }

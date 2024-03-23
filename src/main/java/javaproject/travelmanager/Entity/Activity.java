@@ -41,11 +41,6 @@ public class Activity {
     private int capacity;
 
     /**
-     * The remaining capacity of the activity.
-     */
-    private int remaining;
-
-    /**
      * The destination where the activity takes place.
      */
     @ManyToOne
@@ -67,45 +62,6 @@ public class Activity {
         this.cost = cost;
         this.capacity = capacity;
         this.destination = null;
-        this.remaining = capacity;
-    }
-
-    /**
-     * Method to decrease the remaining capacity of the activity when selected by a passenger.
-     */
-    public void selectActivity() {
-        if (remaining > 0) {
-            this.remaining--;
-        }
-    }
-
-    /**
-     * Method to increase the remaining capacity of the activity when unselected by a passenger.
-     */
-    public void unSelectActivity() {
-        if (remaining < capacity) {
-            this.remaining++;
-        }
-    }
-
-    /**
-     * Method to add this activity to a destination.
-     *
-     * @param destination The destination to add the activity to.
-     */
-    public void addToDestination(Destination destination) {
-        this.destination = destination;
-        destination.addActivity(this);
-    }
-
-    /**
-     * Method to remove this activity from a destination.
-     */
-    public void removeFromDestination() {
-        if (this.destination != null) {
-            this.destination.removeActivity(this.getId());
-            this.destination = null;
-        }
     }
 }
 

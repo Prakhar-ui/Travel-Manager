@@ -116,18 +116,18 @@ public class testDestinationServiceImpl {
         Long activityId = 1L;
 
         Destination mockDestination =  new Destination();
+        mockDestination.setId(destinationId);
         Activity mockActivity = new Activity();
-        mockDestination.addActivity(mockActivity);
+        mockActivity.setId(activityId);
 
-
-        when(activityRepository.findById(activityId)).thenReturn(Optional.of(mockActivity));
-        when(destinationRepository.findById(destinationId)).thenReturn(Optional.of(mockDestination));
+        when(activityRepository.findById(any())).thenReturn(Optional.of(mockActivity));
+        when(destinationRepository.findById(any())).thenReturn(Optional.of(mockDestination));
         when(destinationRepository.save(any())).thenReturn(mockDestination);
 
         Destination result = destinationService.addActivityToDestination( destinationId, activityId);
 
         assertNotNull(result);
-        assertTrue(mockDestination.getActivities().contains(mockActivity));
+        assertTrue(result.getActivities().contains(mockActivity));
     }
     @Test
     void testRemoveActivityFromDestination() {
@@ -135,9 +135,10 @@ public class testDestinationServiceImpl {
         Long activityId = 1L;
 
         Destination mockDestination =  new Destination();
+        mockDestination.setId(destinationId);
         Activity mockActivity = new Activity();
+        mockActivity.setId(activityId);
         mockDestination.addActivity(mockActivity);
-
 
         when(activityRepository.findById(activityId)).thenReturn(Optional.of(mockActivity));
         when(destinationRepository.findById(destinationId)).thenReturn(Optional.of(mockDestination));
@@ -146,12 +147,9 @@ public class testDestinationServiceImpl {
 
         when(destinationRepository.save(any())).thenReturn(mockDestination);
 
-
-
         Destination result = destinationService.addActivityToDestination( destinationId, activityId);
 
         assertNotNull(result);
         assertFalse(result.getActivities().contains(mockActivity));
-        verify(destinationRepository, times(1)).save(mockDestination);
     }
 }

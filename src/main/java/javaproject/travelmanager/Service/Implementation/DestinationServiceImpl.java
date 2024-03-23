@@ -3,17 +3,16 @@ package javaproject.travelmanager.Service.Implementation;
 import javaproject.travelmanager.DTO.DestinationDTO;
 import javaproject.travelmanager.Entity.Activity;
 import javaproject.travelmanager.Entity.Destination;
-import javaproject.travelmanager.Repository.ActivityRepository;
+import javaproject.travelmanager.Entity.TravelPackage;
 import javaproject.travelmanager.Repository.DestinationRepository;
+import javaproject.travelmanager.Service.ActivityService;
 import javaproject.travelmanager.Service.DestinationService;
+import javaproject.travelmanager.Service.TravelPackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.validation.*;
-import jakarta.validation.constraints.*;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Service class responsible for handling operations related to destinations.
@@ -26,140 +25,111 @@ import java.util.Optional;
 public class DestinationServiceImpl implements DestinationService {
 
     private final DestinationRepository destinationRepository;
-    private final ActivityRepository activityRepository;
+    private final ActivityService activityService;
+    private final TravelPackageService travelPackageService;
 
-    /**
-     * Constructs a new DestinationServiceImpl with the provided repositories.
-     *
-     * @param destinationRepository The repository for managing destination entities.
-     * @param activityRepository    The repository for managing activity entities.
-     */
+
     @Autowired
-    public DestinationServiceImpl(DestinationRepository destinationRepository, ActivityRepository activityRepository) {
+    public DestinationServiceImpl(DestinationRepository destinationRepository,
+                                  ActivityService activityService,
+                                  TravelPackageService travelPackageService) {
         this.destinationRepository = destinationRepository;
-        this.activityRepository = activityRepository;
+        this.activityService = activityService;
+        this.travelPackageService = travelPackageService;
     }
 
-    /**
-     * Creates a new destination with the provided information.
-     *
-     * @param destinationDTO The DTO containing destination information.
-     * @return The newly created destination.
-     */
     @Override
-    public Destination createDestination(@Valid  @NotNull DestinationDTO destinationDTO) {
-        Destination newDestination = new Destination();
-        newDestination.setName(destinationDTO.getName());
-        List<Long> activitiesIds = destinationDTO.getActivitiesIDs();
-        if (activitiesIds != null && !activitiesIds.isEmpty()) {
-            List<Activity> activities = activityRepository.findAllById(activitiesIds);
-            newDestination.setActivities(activities);
+    public Destination createDestination(DestinationDTO destinationDTO) {
+        String name = destinationDTO.getName();
+        Long travelPackageId = destinationDTO.getTravelPackageId();
+        List<Long> activitiesIds = destinationDTO.getActivitiesIds();
+        Destination destination = new Destination();
+        destination.setName(name);
+        if (travelPackageId != null) {
+            TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
+            destination.setTravelPackage(travelPackage);
         }
-        return destinationRepository.save(newDestination);
+        if (activitiesIds != null && !activitiesIds.isEmpty()) {
+            for(Long activityId: activitiesIds){
+                Activity activity = activityService.getActivity(activityId);
+                destination.addActivity(activity);
+            }
+        }
+        return destinationRepository.save(destination);
     }
 
-    /**
-     * Retrieves a destination by its ID.
-     *
-     * @param destinationId The ID of the destination to retrieve.
-     * @return An Optional containing the destination if found; otherwise, an empty Optional.
-     * @throws IllegalArgumentException if the provided destination ID is null.
-     */
     @Override
-    public Optional<Destination> getDestination(@NotNull Long destinationId) {
-        return Optional.ofNullable(destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination with ID " + destinationId + " not found.")));
+    public Destination updateDestination(Long destinationId, DestinationDTO destinationDTO) {
+        String name = destinationDTO.getName();
+        Long travelPackageId = destinationDTO.getTravelPackageId();
+        List<Long> activitiesIds = destinationDTO.getActivitiesIds();
+
+        Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
+
+        destination.setName(name);
+
+        if (travelPackageId != null) {
+            setTravelPackageToDestination(destinationId,travelPackageId);
+        }
+        if (activitiesIds != null && !activitiesIds.isEmpty()) {
+            for(Long activityId: activitiesIds){
+                addActivityToDestination(destinationId,activityId);
+            }
+        }
+        return destinationRepository.save(destination);
     }
 
-    /**
-     * Retrieves all destinations.
-     *
-     * @return A list of all destinations.
-     */
+    @Override
+    public void addActivityToDestination(Long destinationId, Long activityId) {
+        Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
+        Activity activity = activityService.getActivity(activityId);
+        destination.addActivity(activity);
+    }
+
+    @Override
+    public void setTravelPackageToDestination(Long destinationId, Long travelPackageId) {
+        Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
+        TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
+        destination.setTravelPackage(travelPackage);
+    }
+
+    @Override
+    public Destination getDestination(Long destinationId) {
+        return destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
+    }
+
     @Override
     public List<Destination> getAllDestinations() {
         return destinationRepository.findAll();
     }
 
     @Override
-    public List<Activity> getAllActivitiesFromDestination(@NotNull Long destinationId) {
-        Optional<Destination> destinationOptional = destinationRepository.findById(destinationId);
-        Destination destination = destinationOptional.orElseThrow(() -> new IllegalArgumentException("Destination with ID " + destinationId + " not found."));
+    public List<Activity> getAllActivitiesFromDestination(Long destinationId) {
+        Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
         return destination.getActivities();
     }
 
     @Override
-    public Destination addActivityToDestination(@NotNull Long destinationId, @NotNull Long activityId) {
-        Optional<Destination> destinationOptional = destinationRepository.findById(destinationId);
-        Destination destination = destinationOptional.orElseThrow(() -> new IllegalArgumentException("Destination with ID " + destinationId + " not found."));
-
-        Optional<Activity> activity = activityRepository.findById(activityId);
-        Activity activityToAdd = activity.orElseThrow(() -> new IllegalArgumentException("Activity with ID " + activityId + " not found."));
-
-        destination.addActivity(activityToAdd);
-
-        return destinationRepository.save(destination);
+    public TravelPackage getTravelPackageFromDestination(Long destinationId) {
+        Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
+        return destination.getTravelPackage();
     }
 
-    /**
-     * Removes an activity association from the destination.
-     *
-     * @param destinationId The ID of the destination from which to remove the activity.
-     * @param activityId    The ID of the activity to remove.
-     * @throws IllegalArgumentException if the destination or activity is not found.
-     */
     @Override
-    public Destination removeActivityFromDestination(@NotNull Long destinationId, @NotNull Long activityId) {
-        Optional<Destination> destinationOptional = destinationRepository.findById(destinationId);
-        Destination destination = destinationOptional.orElseThrow(() -> new IllegalArgumentException("Destination with ID " + destinationId + " not found."));
-
-        Optional<Activity> activity = activityRepository.findById(activityId);
-        Activity activityToRemove = activity.orElseThrow(() -> new IllegalArgumentException("Activity with ID " + activityId + " not found."));
-
-        destination.removeActivity(activityId);
-
-        return destinationRepository.save(destination);
+    public void removeActivityFromDestination(Long destinationId, Long activityId) {
+        Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
+        Activity activity = activityService.getActivity(activityId);
+        destination.removeActivity(activity);
     }
 
-
-    /**
-     * Updates an existing destination with the information provided in the DestinationDTO.
-     *
-     * @param destinationId               The ID of the destination to update.
-     * @param destinationDTO   The DTO containing updated destination information.
-     * @return The updated destination if found; otherwise, returns an empty Optional.
-     * @throws IllegalArgumentException if the provided destination ID is null or if the destination with the given ID does not exist.
-     */
     @Override
-    public Optional<Destination> updateDestination(@NotNull Long destinationId, @Valid @NotNull DestinationDTO destinationDTO) {
-        if (!destinationRepository.existsById(destinationId)) {
-            throw new IllegalArgumentException("Destination with ID " + destinationId + " not found.");
-        }
-
-        return destinationRepository.findById(destinationId).map(existingDestination -> {
-            existingDestination.setName(destinationDTO.getName());
-
-            List<Long> activitiesIds = destinationDTO.getActivitiesIDs();
-            if (activitiesIds != null && !activitiesIds.isEmpty()) {
-                for (Long activityId : activitiesIds){
-                    addActivityToDestination(destinationId, activityId);
-                }
-            }
-
-            return destinationRepository.save(existingDestination);
-        });
+    public void removeTravelPackageFromDestination(Long destinationId) {
+        Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
+        destination.setTravelPackage(null);
     }
 
-    /**
-     * Deletes a destination by its ID.
-     *
-     * @param destinationId The ID of the destination to delete.
-     * @throws IllegalArgumentException if the provided destination ID is null or if the destination with the given ID does not exist.
-     */
     @Override
-    public void deleteDestination(@NotNull Long destinationId) {
-        if (!destinationRepository.existsById(destinationId)) {
-            throw new IllegalArgumentException("Destination with ID " + destinationId + " not found.");
-        }
+    public void deleteDestination(Long destinationId) {
         destinationRepository.deleteById(destinationId);
     }
 }
