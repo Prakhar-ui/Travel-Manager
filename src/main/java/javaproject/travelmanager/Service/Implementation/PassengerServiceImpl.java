@@ -1,22 +1,16 @@
 package javaproject.travelmanager.Service.Implementation;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import javaproject.travelmanager.DTO.PassengerDTO;
 import javaproject.travelmanager.Entity.*;
-import javaproject.travelmanager.Exception.InsufficientActivityCapacityException;
-import javaproject.travelmanager.Exception.InsufficientBalanceException;
 import javaproject.travelmanager.Repository.PassengerRepository;
 import javaproject.travelmanager.Repository.TravelPackageRepository;
 import javaproject.travelmanager.Service.ActivityService;
 import javaproject.travelmanager.Service.PassengerService;
-import javaproject.travelmanager.Service.TravelPackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Service class responsible for handling operations related to passengers.
@@ -111,40 +105,53 @@ public class PassengerServiceImpl implements PassengerService {
 
     @Override
     public void addActivityToPassenger(Long passengerId, Long activityId) {
-        Passenger passenger = passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
+        Passenger passenger = passengerRepository.findById(passengerId)
+                .orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
+
         PassengerType passengerType = passenger.getPassengerType();
         double balance = passenger.getBalance();
         Activity activity = activityService.getActivity(activityId);
         double cost = activity.getCost();
         int capacity = activity.getCapacity();
-        if (capacity > 0){
-            switch (passengerType) {
-                case STANDARD -> {
-                    if (balance > cost){
-                        passenger.setBalance(balance - cost);
-                        passenger.addActivity(activity);
-                        activity.setCapacity(capacity - 1);
-                    }
-                }
-                case GOLD -> {
-                    if (balance > (cost*0.9)){
-                        passenger.setBalance(balance - (cost*0.9));
-                        passenger.addActivity(activity);
-                        activity.setCapacity(capacity - 1);
-                    }
-                }
-                case PREMIUM -> {
-                    passenger.addActivity(activity);
-                    activity.setCapacity(capacity - 1);
-                }
-            }
+
+        if (capacity <= 0) {
+            throw new IllegalStateException("Activity is at full capacity");
         }
+
+        switch (passengerType) {
+            case STANDARD:
+                if (balance < cost) {
+                    throw new IllegalStateException("Insufficient balance!");
+                }
+                break;
+            case GOLD:
+                if (balance < (cost * 0.9)) {
+                    throw new IllegalStateException("Insufficient balance!");
+                }
+                break;
+            default:
+                break;
+        }
+
+        if (passengerType != PassengerType.PREMIUM) {
+            passenger.setBalance(balance - (passengerType == PassengerType.GOLD ? cost * 0.9 : cost));
+        }
+        passenger.addActivity(activity);
+        activity.setCapacity(capacity - 1);
     }
 
     @Override
     public void setTravelPackageToPassenger(Long passengerId, Long travelPackageId) {
-        Passenger passenger = passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
-        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId).orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
+        Passenger passenger = passengerRepository.findById(passengerId)
+                .orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
+
+        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
+                .orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
+
+        if (passenger.getTravelPackage() != null) {
+            throw new IllegalStateException("Passenger is already assigned to another travel package");
+        }
+
         passenger.setTravelPackage(travelPackage);
     }
 
@@ -172,35 +179,42 @@ public class PassengerServiceImpl implements PassengerService {
 
     @Override
     public void removeActivityFromPassenger(Long passengerId, Long activityId) {
-        Passenger passenger = passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
+        Passenger passenger = passengerRepository.findById(passengerId)
+                .orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
+
         PassengerType passengerType = passenger.getPassengerType();
-        double balance = passenger.getBalance();
         Activity activity = activityService.getActivity(activityId);
         double cost = activity.getCost();
         int capacity = activity.getCapacity();
-            switch (passengerType) {
-                case STANDARD -> {
-                        passenger.setBalance(balance + cost);
-                        passenger.removeActivity(activity);
-                        activity.setCapacity(capacity + 1);
 
-                }
-                case GOLD -> {
-                        passenger.setBalance(balance + (cost*0.9));
-                        passenger.removeActivity(activity);
-                        activity.setCapacity(capacity + 1);
-                }
-                case PREMIUM -> {
-                    passenger.removeActivity(activity);
-                    activity.setCapacity(capacity + 1);
-                }
-            }
+        if (!passenger.getActivities().contains(activity)) {
+            throw new IllegalStateException("Passenger is not registered for this activity");
+        }
+
+        switch (passengerType) {
+            case STANDARD:
+                passenger.setBalance(passenger.getBalance() + cost);
+                break;
+            case GOLD:
+                passenger.setBalance(passenger.getBalance() + (cost * 0.9));
+                break;
+            default:
+                break;
+        }
         passenger.removeActivity(activity);
+        activity.setCapacity(capacity + 1);
     }
 
     @Override
     public void removeTravelPackageFromPassenger(Long passengerId) {
-        Passenger passenger = passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
+        // Retrieve the passenger
+        Passenger passenger = passengerRepository.findById(passengerId)
+                .orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
+
+        if (passenger.getTravelPackage() == null) {
+            throw new IllegalStateException("Passenger does not have an associated travel package");
+        }
+
         passenger.setTravelPackage(null);
     }
 

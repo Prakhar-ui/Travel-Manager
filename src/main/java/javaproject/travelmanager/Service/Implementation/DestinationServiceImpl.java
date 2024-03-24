@@ -8,7 +8,6 @@ import javaproject.travelmanager.Repository.DestinationRepository;
 import javaproject.travelmanager.Repository.TravelPackageRepository;
 import javaproject.travelmanager.Service.ActivityService;
 import javaproject.travelmanager.Service.DestinationService;
-import javaproject.travelmanager.Service.TravelPackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,16 +81,33 @@ public class DestinationServiceImpl implements DestinationService {
 
     @Override
     public void addActivityToDestination(Long destinationId, Long activityId) {
-        Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
+        Destination destination = destinationRepository.findById(destinationId)
+                .orElseThrow(() -> new IllegalArgumentException("Destination Not Found"));
+
         Activity activity = activityService.getActivity(activityId);
+
+        if (activity == null) {
+            throw new IllegalArgumentException("Activity Not Found");
+        }
+
         destination.addActivity(activity);
-        activityService.setDestinationToActivity(activityId,destinationId);
+
+        activityService.setDestinationToActivity(activityId, destinationId);
     }
+
 
     @Override
     public void setTravelPackageToDestination(Long destinationId, Long travelPackageId) {
-        Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
-        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId).orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
+        Destination destination = destinationRepository.findById(destinationId)
+                .orElseThrow(() -> new IllegalArgumentException("Destination Not Found"));
+
+        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
+                .orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
+
+        if (destination.getTravelPackage() != null) {
+            throw new IllegalStateException("Destination already has an associated travel package");
+        }
+
         destination.setTravelPackage(travelPackage);
     }
 
@@ -119,15 +135,33 @@ public class DestinationServiceImpl implements DestinationService {
 
     @Override
     public void removeActivityFromDestination(Long destinationId, Long activityId) {
-        Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
+        Destination destination = destinationRepository.findById(destinationId)
+                .orElseThrow(() -> new IllegalArgumentException("Destination Not Found"));
+
         Activity activity = activityService.getActivity(activityId);
+
+        if (activity == null) {
+            throw new IllegalArgumentException("Activity Not Found");
+        }
+
+        if (!destination.getActivities().contains(activity)) {
+            throw new IllegalStateException("Activity is not associated with this destination");
+        }
+
         destination.removeActivity(activity);
+
         activityService.removeDestinationFromActivity(activityId);
     }
 
     @Override
     public void removeTravelPackageFromDestination(Long destinationId) {
-        Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
+        Destination destination = destinationRepository.findById(destinationId)
+                .orElseThrow(() -> new IllegalArgumentException("Destination Not Found"));
+
+        if (destination.getTravelPackage() == null) {
+            throw new IllegalStateException("Destination does not have an associated travel package");
+        }
+
         destination.setTravelPackage(null);
     }
 

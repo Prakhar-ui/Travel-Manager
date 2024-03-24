@@ -2,8 +2,6 @@ package javaproject.travelmanager.Contoller;
 
 import javaproject.travelmanager.DTO.PassengerDTO;
 import javaproject.travelmanager.Entity.Passenger;
-import javaproject.travelmanager.Exception.InsufficientActivityCapacityException;
-import javaproject.travelmanager.Exception.InsufficientBalanceException;
 import javaproject.travelmanager.Service.PassengerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,7 +29,7 @@ public class PassengerController {
      * or HTTP status 500 (Internal Server Error) if an error occurs during creation.
      */
     @PostMapping("/add")
-    public ResponseEntity<Passenger> createPassenger(@RequestBody PassengerDTO passengerDTO) throws InsufficientBalanceException, InsufficientActivityCapacityException {
+    public ResponseEntity<Passenger> createPassenger(@RequestBody PassengerDTO passengerDTO) {
         Passenger createdPassenger = passengerService.createPassenger(passengerDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPassenger);
     }
@@ -74,7 +72,7 @@ public class PassengerController {
      * or HTTP status 404 (Not Found) if the passenger does not exist.
      */
     @PostMapping("/edit/{id}")
-    public ResponseEntity<Passenger> updatePassenger(@PathVariable Long id, @RequestBody PassengerDTO passengerDTO) throws InsufficientBalanceException, InsufficientActivityCapacityException {
+    public ResponseEntity<Passenger> updatePassenger(@PathVariable Long id, @RequestBody PassengerDTO passengerDTO) {
         Passenger updatedPassenger = passengerService.updatePassenger(id, passengerDTO);
         return new ResponseEntity<>(updatedPassenger,HttpStatus.OK);
 

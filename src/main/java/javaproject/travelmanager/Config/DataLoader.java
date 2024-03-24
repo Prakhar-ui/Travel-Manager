@@ -3,9 +3,7 @@ package javaproject.travelmanager.Config;
 
 import javaproject.travelmanager.DTO.*;
 import javaproject.travelmanager.Entity.*;
-import javaproject.travelmanager.Repository.*;
 import javaproject.travelmanager.Service.*;
-import javaproject.travelmanager.Service.Implementation.TravelPackageServiceImpl;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

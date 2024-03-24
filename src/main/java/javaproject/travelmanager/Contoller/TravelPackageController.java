@@ -1,13 +1,6 @@
 package javaproject.travelmanager.Contoller;
-import javaproject.travelmanager.DTO.ActivityDTO;
 import javaproject.travelmanager.DTO.TravelPackageDTO;
-import javaproject.travelmanager.Entity.Activity;
-import javaproject.travelmanager.Entity.Destination;
-import javaproject.travelmanager.Entity.Passenger;
 import javaproject.travelmanager.Entity.TravelPackage;
-import javaproject.travelmanager.Exception.ActivityNotFoundException;
-import javaproject.travelmanager.Exception.InsufficientActivityCapacityException;
-import javaproject.travelmanager.Exception.InsufficientBalanceException;
 import javaproject.travelmanager.Service.DestinationService;
 import javaproject.travelmanager.Service.PassengerService;
 import javaproject.travelmanager.Service.TravelPackagePrintService;
@@ -18,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Controller class for managing travel packages.

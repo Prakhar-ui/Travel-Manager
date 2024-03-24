@@ -74,7 +74,8 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         List<Long> destinationsIds = travelPackageDTO.getDestinationsIds();
         List<Long> passengersIds = travelPackageDTO.getPassengersIds();
 
-        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId).orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
+        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
+                .orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
 
         travelPackage.setName(name);
         travelPackage.setPassengerCapacity(passengerCapacity);
@@ -95,20 +96,45 @@ public class TravelPackageServiceImpl implements TravelPackageService {
 
     @Override
     public void addDestinationToTravelPackage(Long travelPackageId, Long destinationId) {
-        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId).orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
+        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
+                .orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
+
         Destination destination = destinationService.getDestination(destinationId);
+
+        if (destination == null) {
+            throw new IllegalArgumentException("Destination Not Found");
+        }
+
+        if (travelPackage.getDestinations().contains(destination)) {
+            throw new IllegalStateException("Destination is already added to this travel package");
+        }
+
         travelPackage.addDestination(destination);
     }
 
     @Override
     public void addPassengerToTravelPackage(Long travelPackageId, Long passengerId) {
-        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId).orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
+        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
+                .orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
+
         int passengerCapacity = travelPackage.getPassengerCapacity();
-        int passengers = travelPackage.getPassengers().size();
-        if (passengerCapacity > passengers){
-            Passenger passenger = passengerService.getPassenger(passengerId);
-            travelPackage.addPassenger(passenger);
+
+        if (passengerCapacity <= 0) {
+            throw new IllegalStateException("Travel package is at full capacity");
         }
+
+        Passenger passenger = passengerService.getPassenger(passengerId);
+
+        if (passenger == null) {
+            throw new IllegalArgumentException("Passenger Not Found");
+        }
+
+        if (travelPackage.getPassengers().contains(passenger)) {
+            throw new IllegalStateException("Passenger is already added to this travel package");
+        }
+
+        travelPackage.addPassenger(passenger);
+        travelPackage.setPassengerCapacity(passengerCapacity - 1);
     }
 
     @Override
@@ -135,16 +161,40 @@ public class TravelPackageServiceImpl implements TravelPackageService {
 
     @Override
     public void removeDestinationFromTravelPackage(Long travelPackageId, Long destinationId) {
-        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId).orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
+        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
+                .orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
+
         Destination destination = destinationService.getDestination(destinationId);
+
+        if (destination == null) {
+            throw new IllegalArgumentException("Destination Not Found");
+        }
+
+        if (!travelPackage.getDestinations().contains(destination)) {
+            throw new IllegalStateException("Destination is not part of this travel package");
+        }
+
         travelPackage.removeDestination(destination);
     }
 
     @Override
     public void removePassengerFromTravelPackage(Long travelPackageId, Long passengerId) {
-        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId).orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
+        TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
+                .orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
+
         Passenger passenger = passengerService.getPassenger(passengerId);
+
+        if (passenger == null) {
+            throw new IllegalArgumentException("Passenger Not Found");
+        }
+
+        if (!travelPackage.getPassengers().contains(passenger)) {
+            throw new IllegalStateException("Passenger is not part of this travel package");
+        }
+
+        int passengerCapacity = travelPackage.getPassengerCapacity();
         travelPackage.removePassenger(passenger);
+        travelPackage.setPassengerCapacity(passengerCapacity + 1);
     }
 
     @Override

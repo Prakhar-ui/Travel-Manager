@@ -74,18 +74,20 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public void setDestinationToActivity(Long activityId, Long destinationId) {
-        Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
-        Optional<Activity> activity = activityRepository.findById(activityId);
-        if (activity.isPresent()){
-            activity.get().setDestination(destination);
-            activityRepository.save(activity.get());
-        }
+        Destination destination = destinationRepository.findById(destinationId)
+                .orElseThrow(() -> new IllegalArgumentException("Destination Not Found"));
+
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("Activity Not Found"));
+
+        activity.setDestination(destination);
+        activityRepository.save(activity);
     }
+
 
     @Override
     public Activity getActivity(Long activityId) {
-        Optional<Activity> activity = activityRepository.findById(activityId);
-        return activity.get();
+        return  activityRepository.findById(activityId).orElseThrow(() -> new IllegalArgumentException("Activity Not present"));
     }
 
     @Override
@@ -95,18 +97,19 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public Destination getDestinationFromActivity(Long activityId) {
-        Optional<Activity> activity = activityRepository.findById(activityId);
-        return activity.get().getDestination();
+        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new IllegalArgumentException("Activity Not present"));
+        return activity.getDestination();
     }
 
     @Override
     public void removeDestinationFromActivity(Long activityId) {
-        Optional<Activity> activity = activityRepository.findById(activityId);
-        if (activity.isPresent()){
-            activity.get().setDestination(null);
-            activityRepository.save(activity.get());
-        }
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("Activity Not Found"));
+
+        activity.setDestination(null);
+        activityRepository.save(activity);
     }
+
 
     @Override
     public void deleteActivity(Long activityId) {

@@ -1,17 +1,7 @@
 package javaproject.travelmanager.Service.Implementation;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import javaproject.travelmanager.Entity.*;
-import javaproject.travelmanager.Repository.ActivityRepository;
-import javaproject.travelmanager.Repository.DestinationRepository;
-import javaproject.travelmanager.Repository.PassengerRepository;
-import javaproject.travelmanager.Repository.TravelPackageRepository;
-import javaproject.travelmanager.Service.DestinationService;
-import javaproject.travelmanager.Service.PassengerService;
-import javaproject.travelmanager.Service.TravelPackagePrintService;
-import javaproject.travelmanager.Service.TravelPackageService;
-import org.springframework.beans.factory.annotation.Autowired;
+import javaproject.travelmanager.Service.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +20,7 @@ public class TravelPackagePrintServiceImpl implements TravelPackagePrintService 
      * Prints the itinerary of the travel package, including destinations and activities.
      */
     @Override
-    public void printItinerary(@Valid @NotNull Long travelPackageId) {
+    public void printItinerary(Long travelPackageId) {
         TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
 
         String travelPackageName = travelPackage.getName();
@@ -56,7 +46,7 @@ public class TravelPackagePrintServiceImpl implements TravelPackagePrintService 
      * Prints the list of passengers enrolled in the travel package.
      */
     @Override
-    public void printPassengerList(@Valid @NotNull Long travelPackageId) {
+    public void printPassengerList(Long travelPackageId) {
         TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
 
 
@@ -79,7 +69,7 @@ public class TravelPackagePrintServiceImpl implements TravelPackagePrintService 
      * Prints details about each passenger in the travel package, including their activities.
      */
     @Override
-    public void printPassengerDetails(@Valid @NotNull Long travelPackageId) {
+    public void printPassengerDetails(Long travelPackageId) {
         TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
 
         String travelPackageName = travelPackage.getName();
@@ -113,7 +103,7 @@ public class TravelPackagePrintServiceImpl implements TravelPackagePrintService 
      * Prints the available activities in the travel package, including the number of available spaces.
      */
     @Override
-    public void printAvailableActivities(@Valid @NotNull Long travelPackageId) {
+    public void printAvailableActivities(Long travelPackageId) {
         TravelPackage travelPackage = travelPackageService.getTravelPackage(travelPackageId);
 
         String travelPackageName = travelPackage.getName();

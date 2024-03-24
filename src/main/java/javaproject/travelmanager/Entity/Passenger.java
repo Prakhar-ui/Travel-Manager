@@ -2,9 +2,6 @@ package javaproject.travelmanager.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import javaproject.travelmanager.Exception.ActivityNotFoundException;
-import javaproject.travelmanager.Exception.InsufficientActivityCapacityException;
-import javaproject.travelmanager.Exception.InsufficientBalanceException;
 import lombok.*;
 
 import java.util.*;
@@ -89,7 +86,7 @@ public class Passenger {
 
 
     /**
-     * Removes a activity from the travel package by ID.
+     * Removes an activity from the travel package by ID.
      *
      * @param activity The passenger to remove.
      */
