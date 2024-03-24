@@ -76,9 +76,9 @@ public class Passenger {
     }
 
     /**
-     * Adds a passenger to the travel package.
+     * Adds an Activity to the Passenger.
      *
-     * @param activity The passenger to add.
+     * @param activity The activity to add.
      */
     public void addActivity(Activity activity) {
         this.activities.add(activity);
@@ -86,9 +86,9 @@ public class Passenger {
 
 
     /**
-     * Removes an activity from the travel package by ID.
+     * Removes an activity from the Passenger.
      *
-     * @param activity The passenger to remove.
+     * @param activity The activity to remove.
      */
     public void removeActivity(Activity activity) {
         this.activities.remove(activity);

@@ -38,6 +38,11 @@ public class DestinationServiceImpl implements DestinationService {
         this.travelPackageRepository = travelPackageRepository;
     }
 
+    /**
+     * Creates a new destination based on the provided DTO.
+     * @param destinationDTO The DTO containing information to create the destination.
+     * @return The newly created destination.
+     */
     @Override
     public Destination createDestination(DestinationDTO destinationDTO) {
         String name = destinationDTO.getName();
@@ -58,6 +63,12 @@ public class DestinationServiceImpl implements DestinationService {
         return destinationRepository.save(destination);
     }
 
+    /**
+     * Updates an existing destination with the provided DTO.
+     * @param destinationId The ID of the destination to update.
+     * @param destinationDTO The DTO containing updated information for the destination.
+     * @return The updated destination.
+     */
     @Override
     public Destination updateDestination(Long destinationId, DestinationDTO destinationDTO) {
         String name = destinationDTO.getName();
@@ -79,6 +90,11 @@ public class DestinationServiceImpl implements DestinationService {
         return destinationRepository.save(destination);
     }
 
+    /**
+     * Adds an activity to the specified destination.
+     * @param destinationId The ID of the destination to which the activity will be added.
+     * @param activityId The ID of the activity to add.
+     */
     @Override
     public void addActivityToDestination(Long destinationId, Long activityId) {
         Destination destination = destinationRepository.findById(destinationId)
@@ -95,7 +111,11 @@ public class DestinationServiceImpl implements DestinationService {
         activityService.setDestinationToActivity(activityId, destinationId);
     }
 
-
+    /**
+     * Sets the travel package for the specified destination.
+     * @param destinationId The ID of the destination to which the travel package will be set.
+     * @param travelPackageId The ID of the travel package to set.
+     */
     @Override
     public void setTravelPackageToDestination(Long destinationId, Long travelPackageId) {
         Destination destination = destinationRepository.findById(destinationId)
@@ -111,28 +131,52 @@ public class DestinationServiceImpl implements DestinationService {
         destination.setTravelPackage(travelPackage);
     }
 
+    /**
+     * Retrieves the destination with the specified ID.
+     * @param destinationId The ID of the destination to retrieve.
+     * @return The destination with the specified ID, if found.
+     */
     @Override
     public Destination getDestination(Long destinationId) {
         return destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
     }
 
+    /**
+     * Retrieves all destinations.
+     * @return A list of all destinations.
+     */
     @Override
     public List<Destination> getAllDestinations() {
         return destinationRepository.findAll();
     }
 
+    /**
+     * Retrieves all activities associated with the specified destination.
+     * @param destinationId The ID of the destination.
+     * @return A list of all activities associated with the specified destination.
+     */
     @Override
     public List<Activity> getAllActivitiesFromDestination(Long destinationId) {
         Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
         return destination.getActivities();
     }
 
+    /**
+     * Retrieves the travel package associated with the specified destination.
+     * @param destinationId The ID of the destination.
+     * @return The travel package associated with the specified destination, if any.
+     */
     @Override
     public TravelPackage getTravelPackageFromDestination(Long destinationId) {
         Destination destination = destinationRepository.findById(destinationId).orElseThrow(() -> new IllegalArgumentException("Destination Not present"));
         return destination.getTravelPackage();
     }
 
+    /**
+     * Removes an activity from the specified destination.
+     * @param destinationId The ID of the destination from which the activity will be removed.
+     * @param activityId The ID of the activity to remove.
+     */
     @Override
     public void removeActivityFromDestination(Long destinationId, Long activityId) {
         Destination destination = destinationRepository.findById(destinationId)
@@ -153,6 +197,10 @@ public class DestinationServiceImpl implements DestinationService {
         activityService.removeDestinationFromActivity(activityId);
     }
 
+    /**
+     * Removes the travel package from the specified destination.
+     * @param destinationId The ID of the destination from which the travel package will be removed.
+     */
     @Override
     public void removeTravelPackageFromDestination(Long destinationId) {
         Destination destination = destinationRepository.findById(destinationId)
@@ -165,6 +213,10 @@ public class DestinationServiceImpl implements DestinationService {
         destination.setTravelPackage(null);
     }
 
+    /**
+     * Deletes the destination with the specified ID.
+     * @param destinationId The ID of the destination to delete.
+     */
     @Override
     public void deleteDestination(Long destinationId) {
         destinationRepository.deleteById(destinationId);

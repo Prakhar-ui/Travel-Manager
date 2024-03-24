@@ -38,7 +38,11 @@ public class PassengerServiceImpl implements PassengerService {
         this.activityService = activityService;
     }
 
-
+    /**
+     * Creates a new passenger based on the provided DTO.
+     * @param passengerDTO The DTO containing information to create the passenger.
+     * @return The newly created passenger.
+     */
     @Override
     public Passenger createPassenger(PassengerDTO passengerDTO) {
         String name = passengerDTO.getName();
@@ -76,6 +80,12 @@ public class PassengerServiceImpl implements PassengerService {
         return passengerRepository.save(passenger);
     }
 
+    /**
+     * Updates an existing passenger with the provided DTO.
+     * @param passengerId The ID of the passenger to update.
+     * @param passengerDTO The DTO containing updated information for the passenger.
+     * @return The updated passenger.
+     */
     @Override
     public Passenger updatePassenger(Long passengerId, PassengerDTO passengerDTO) {
         String name = passengerDTO.getName();
@@ -103,6 +113,11 @@ public class PassengerServiceImpl implements PassengerService {
         return passengerRepository.save(passenger);
     }
 
+    /**
+     * Adds an activity to the specified passenger.
+     * @param passengerId The ID of the passenger to which the activity will be added.
+     * @param activityId The ID of the activity to add.
+     */
     @Override
     public void addActivityToPassenger(Long passengerId, Long activityId) {
         Passenger passenger = passengerRepository.findById(passengerId)
@@ -140,6 +155,11 @@ public class PassengerServiceImpl implements PassengerService {
         activity.setCapacity(capacity - 1);
     }
 
+    /**
+     * Sets the travel package for the specified passenger.
+     * @param passengerId The ID of the passenger to which the travel package will be set.
+     * @param travelPackageId The ID of the travel package to set.
+     */
     @Override
     public void setTravelPackageToPassenger(Long passengerId, Long travelPackageId) {
         Passenger passenger = passengerRepository.findById(passengerId)
@@ -155,28 +175,52 @@ public class PassengerServiceImpl implements PassengerService {
         passenger.setTravelPackage(travelPackage);
     }
 
+    /**
+     * Retrieves the passenger with the specified ID.
+     * @param passengerId The ID of the passenger to retrieve.
+     * @return The passenger with the specified ID, if found.
+     */
     @Override
     public Passenger getPassenger(Long passengerId) {
         return passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
     }
 
+    /**
+     * Retrieves all passengers.
+     * @return A list of all passengers.
+     */
     @Override
     public List<Passenger> getAllPassengers() {
         return passengerRepository.findAll();
     }
 
+    /**
+     * Retrieves all activities associated with the specified passenger.
+     * @param passengerId The ID of the passenger.
+     * @return A list of all activities associated with the specified passenger.
+     */
     @Override
     public List<Activity> getAllActivitiesFromPassenger(Long passengerId) {
         Passenger passenger = passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
         return passenger.getActivities();
     }
 
+    /**
+     * Retrieves the travel package associated with the specified passenger.
+     * @param passengerId The ID of the passenger.
+     * @return The travel package associated with the specified passenger, if any.
+     */
     @Override
     public TravelPackage getTravelPackageFromPassenger(Long passengerId) {
         Passenger passenger = passengerRepository.findById(passengerId).orElseThrow(() -> new IllegalArgumentException("Passenger Not Found"));
         return passenger.getTravelPackage();
     }
 
+    /**
+     * Removes an activity from the specified passenger.
+     * @param passengerId The ID of the passenger from which the activity will be removed.
+     * @param activityId The ID of the activity to remove.
+     */
     @Override
     public void removeActivityFromPassenger(Long passengerId, Long activityId) {
         Passenger passenger = passengerRepository.findById(passengerId)
@@ -205,6 +249,10 @@ public class PassengerServiceImpl implements PassengerService {
         activity.setCapacity(capacity + 1);
     }
 
+    /**
+     * Removes the travel package from the specified passenger.
+     * @param passengerId The ID of the passenger from which the travel package will be removed.
+     */
     @Override
     public void removeTravelPackageFromPassenger(Long passengerId) {
         // Retrieve the passenger
@@ -218,6 +266,10 @@ public class PassengerServiceImpl implements PassengerService {
         passenger.setTravelPackage(null);
     }
 
+    /**
+     * Deletes the passenger with the specified ID.
+     * @param passengerId The ID of the passenger to delete.
+     */
     @Override
     public void deletePassenger(Long passengerId) {
         passengerRepository.deleteById(passengerId);

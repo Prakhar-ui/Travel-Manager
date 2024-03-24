@@ -10,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+/**
+ * Class for loading sample data.
+ */
 @Component
 public class DataLoader implements CommandLineRunner {
     private final TravelPackageService travelPackageService;

@@ -9,12 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Controller class for managing activities.
  */
-
 @RestController
 @RequestMapping("/activities")
 public class ActivityController {
@@ -23,11 +21,9 @@ public class ActivityController {
     private ActivityService activityService;
 
     /**
-     * Adds a new activity.
-     *
-     * @param activityDTO The DTO representing the activity to be added.
-     * @return ResponseEntity containing the created activity and HTTP status 201 (Created) if successful,
-     * or HTTP status 500 (Internal Server Error) if an error occurs during creation.
+     * Endpoint to create a new activity.
+     * @param activityDTO The DTO (Data Transfer Object) representing the activity to be created.
+     * @return ResponseEntity containing the created Activity object and HTTP status code 201 (CREATED).
      */
     @PostMapping("/add")
     public ResponseEntity<Activity> createActivity(@RequestBody ActivityDTO activityDTO) {
@@ -36,23 +32,23 @@ public class ActivityController {
     }
 
     /**
-     * Retrieves an activity by its ID.
-     *
+     * Endpoint to retrieve an activity by its ID.
      * @param id The ID of the activity to retrieve.
-     * @return ResponseEntity containing the retrieved activity and HTTP status 200 (OK) if found,
-     * or HTTP status 404 (Not Found) if the activity does not exist.
+     * @return ResponseEntity containing the Activity object with HTTP status code 200 (OK), or status code 404 (NOT FOUND) if the activity does not exist.
      */
     @GetMapping("/{id}")
     public ResponseEntity<Activity> getActivityById(@PathVariable Long id) {
         Activity activity = activityService.getActivity(id);
-        return new ResponseEntity<>(activity,HttpStatus.OK);
+        if (activity != null) {
+            return new ResponseEntity<>(activity, HttpStatus.OK);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
-     * Retrieves all activities.
-     *
-     * @return ResponseEntity containing a list of all activities and HTTP status 200 (OK) if activities exist,
-     * or HTTP status 204 (No Content) if no activities exist.
+     * Endpoint to retrieve all activities.
+     * @return ResponseEntity containing a list of all activities with HTTP status code 200 (OK), or status code 204 (NO CONTENT) if there are no activities.
      */
     @GetMapping("/all")
     public ResponseEntity<List<Activity>> getAllActivities() {
@@ -65,29 +61,26 @@ public class ActivityController {
     }
 
     /**
-     * Updates an existing activity.
-     *
-     * @param id          The ID of the activity to update.
-     * @param activityDTO The DTO representing the updated activity.
-     * @return ResponseEntity containing the updated activity and HTTP status 200 (OK) if successful,
-     * or HTTP status 404 (Not Found) if the activity does not exist.
+     * Endpoint to update an existing activity.
+     * @param id The ID of the activity to update.
+     * @param activityDTO The DTO representing the updated activity data.
+     * @return ResponseEntity containing the updated Activity object with HTTP status code 200 (OK).
      */
     @PostMapping("/edit/{id}")
     public ResponseEntity<Activity> updateActivity(@PathVariable Long id, @RequestBody ActivityDTO activityDTO) {
         Activity updatedActivity = activityService.updateActivity(id, activityDTO);
-        return new ResponseEntity<>(updatedActivity,HttpStatus.OK);
+        return ResponseEntity.ok(updatedActivity);
     }
 
     /**
-     * Deletes an activity by its ID.
-     *
+     * Endpoint to delete an activity by its ID.
      * @param id The ID of the activity to delete.
-     * @return ResponseEntity with HTTP status 204 (No Content) if successful,
-     * or HTTP status 404 (Not Found) if the activity does not exist.
+     * @return ResponseEntity with no content and HTTP status code 204 (NO CONTENT) upon successful deletion.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteActivity(@PathVariable Long id) {
         activityService.deleteActivity(id);
-            return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
     }
 }
+

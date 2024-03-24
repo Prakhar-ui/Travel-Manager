@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Controller class for managing passengers.
@@ -22,11 +21,9 @@ public class PassengerController {
     private PassengerService passengerService;
 
     /**
-     * Adds a new passenger.
-     *
-     * @param passengerDTO The DTO representing the passenger to be added.
-     * @return ResponseEntity containing the created passenger and HTTP status 201 (Created) if successful,
-     * or HTTP status 500 (Internal Server Error) if an error occurs during creation.
+     * Endpoint to create a new passenger.
+     * @param passengerDTO The DTO (Data Transfer Object) representing the passenger to be created.
+     * @return ResponseEntity containing the created Passenger object and HTTP status code 201 (CREATED).
      */
     @PostMapping("/add")
     public ResponseEntity<Passenger> createPassenger(@RequestBody PassengerDTO passengerDTO) {
@@ -35,23 +32,23 @@ public class PassengerController {
     }
 
     /**
-     * Retrieves a passenger by its ID.
-     *
+     * Endpoint to retrieve a passenger by its ID.
      * @param id The ID of the passenger to retrieve.
-     * @return ResponseEntity containing the retrieved passenger and HTTP status 200 (OK) if found,
-     * or HTTP status 404 (Not Found) if the passenger does not exist.
+     * @return ResponseEntity containing the Passenger object with HTTP status code 200 (OK), or status code 404 (NOT FOUND) if the passenger does not exist.
      */
     @GetMapping("/{id}")
     public ResponseEntity<Passenger> getPassengerById(@PathVariable Long id) {
         Passenger passenger = passengerService.getPassenger(id);
-        return new ResponseEntity<>(passenger,HttpStatus.OK);
+        if (passenger != null) {
+            return new ResponseEntity<>(passenger, HttpStatus.OK);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
-     * Retrieves all passengers.
-     *
-     * @return ResponseEntity containing a list of all passengers and HTTP status 200 (OK) if passengers exist,
-     * or HTTP status 204 (No Content) if no passengers exist.
+     * Endpoint to retrieve all passengers.
+     * @return ResponseEntity containing a list of all passengers with HTTP status code 200 (OK), or status code 204 (NO CONTENT) if there are no passengers.
      */
     @GetMapping("/all")
     public ResponseEntity<List<Passenger>> getAllPassengers() {
@@ -64,31 +61,27 @@ public class PassengerController {
     }
 
     /**
-     * Updates an existing passenger.
-     *
-     * @param id           The ID of the passenger to update.
-     * @param passengerDTO The DTO representing the updated passenger.
-     * @return ResponseEntity containing the updated passenger and HTTP status 200 (OK) if successful,
-     * or HTTP status 404 (Not Found) if the passenger does not exist.
+     * Endpoint to update an existing passenger.
+     * @param id The ID of the passenger to update.
+     * @param passengerDTO The DTO representing the updated passenger data.
+     * @return ResponseEntity containing the updated Passenger object with HTTP status code 200 (OK).
      */
     @PostMapping("/edit/{id}")
     public ResponseEntity<Passenger> updatePassenger(@PathVariable Long id, @RequestBody PassengerDTO passengerDTO) {
         Passenger updatedPassenger = passengerService.updatePassenger(id, passengerDTO);
-        return new ResponseEntity<>(updatedPassenger,HttpStatus.OK);
-
+        return new ResponseEntity<>(updatedPassenger, HttpStatus.OK);
     }
 
     /**
-     * Deletes a passenger by its ID.
-     *
+     * Endpoint to delete a passenger by its ID.
      * @param id The ID of the passenger to delete.
-     * @return ResponseEntity with HTTP status 204 (No Content) if successful,
-     * or HTTP status 404 (Not Found) if the passenger does not exist.
+     * @return ResponseEntity with no content and HTTP status code 204 (NO CONTENT) upon successful deletion.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePassenger(@PathVariable Long id) {
         passengerService.deletePassenger(id);
-            return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
     }
 }
+
 

@@ -65,7 +65,7 @@ public class TravelPackage {
     }
 
     /**
-     * Removes a destination from the travel package by ID.
+     * Removes a destination from the travel package.
      *
      * @param destination The destination to remove.
      */
@@ -84,7 +84,7 @@ public class TravelPackage {
 
 
     /**
-     * Removes a passenger from the travel package by ID.
+     * Removes a passenger from the travel package.
      *
      * @param passenger The passenger to remove.
      */

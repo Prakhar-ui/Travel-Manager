@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Controller class for managing destinations.
@@ -22,11 +21,9 @@ public class DestinationController {
     private DestinationService destinationService;
 
     /**
-     * Adds a new destination.
-     *
-     * @param destinationDTO The DTO representing the destination to be added.
-     * @return ResponseEntity containing the created destination and HTTP status 201 (Created) if successful,
-     * or HTTP status 500 (Internal Server Error) if an error occurs during creation.
+     * Endpoint to create a new destination.
+     * @param destinationDTO The DTO (Data Transfer Object) representing the destination to be created.
+     * @return ResponseEntity containing the created Destination object and HTTP status code 201 (CREATED).
      */
     @PostMapping("/add")
     public ResponseEntity<Destination> createDestination(@RequestBody DestinationDTO destinationDTO) {
@@ -35,23 +32,23 @@ public class DestinationController {
     }
 
     /**
-     * Retrieves a destination by its ID.
-     *
+     * Endpoint to retrieve a destination by its ID.
      * @param id The ID of the destination to retrieve.
-     * @return ResponseEntity containing the retrieved destination and HTTP status 200 (OK) if found,
-     * or HTTP status 404 (Not Found) if the destination does not exist.
+     * @return ResponseEntity containing the Destination object with HTTP status code 200 (OK), or status code 404 (NOT FOUND) if the destination does not exist.
      */
     @GetMapping("/{id}")
     public ResponseEntity<Destination> getDestinationById(@PathVariable Long id) {
         Destination destination = destinationService.getDestination(id);
-        return new ResponseEntity<>(destination,HttpStatus.OK);
+        if (destination != null) {
+            return new ResponseEntity<>(destination, HttpStatus.OK);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
-     * Retrieves all destinations.
-     *
-     * @return ResponseEntity containing a list of all destinations and HTTP status 200 (OK) if destinations exist,
-     * or HTTP status 204 (No Content) if no destinations exist.
+     * Endpoint to retrieve all destinations.
+     * @return ResponseEntity containing a list of all destinations with HTTP status code 200 (OK), or status code 204 (NO CONTENT) if there are no destinations.
      */
     @GetMapping("/all")
     public ResponseEntity<List<Destination>> getAllDestinations() {
@@ -64,29 +61,26 @@ public class DestinationController {
     }
 
     /**
-     * Updates an existing destination.
-     *
-     * @param id               The ID of the destination to update.
-     * @param destinationDTO   The DTO representing the updated destination.
-     * @return ResponseEntity containing the updated destination and HTTP status 200 (OK) if successful,
-     * or HTTP status 404 (Not Found) if the destination does not exist.
+     * Endpoint to update an existing destination.
+     * @param id The ID of the destination to update.
+     * @param destinationDTO The DTO representing the updated destination data.
+     * @return ResponseEntity containing the updated Destination object with HTTP status code 200 (OK).
      */
     @PostMapping("/edit/{id}")
     public ResponseEntity<Destination> updateDestination(@PathVariable Long id, @RequestBody DestinationDTO destinationDTO) {
         Destination updatedDestination = destinationService.updateDestination(id, destinationDTO);
-        return new ResponseEntity<>(updatedDestination,HttpStatus.OK);
+        return ResponseEntity.ok(updatedDestination);
     }
 
     /**
-     * Deletes a destination by its ID.
-     *
+     * Endpoint to delete a destination by its ID.
      * @param id The ID of the destination to delete.
-     * @return ResponseEntity with HTTP status 204 (No Content) if successful,
-     * or HTTP status 404 (Not Found) if the destination does not exist.
+     * @return ResponseEntity with no content and HTTP status code 204 (NO CONTENT) upon successful deletion.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDestination(@PathVariable Long id) {
         destinationService.deleteDestination(id);
-            return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
     }
 }
+

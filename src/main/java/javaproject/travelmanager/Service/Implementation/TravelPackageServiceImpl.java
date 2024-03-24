@@ -40,6 +40,11 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         this.destinationService = destinationService;
     }
 
+    /**
+     * Creates a new travel package.
+     * @param travelPackageDTO The DTO containing information about the new travel package.
+     * @return The newly created travel package.
+     */
     @Override
     public TravelPackage createTravelPackage(TravelPackageDTO travelPackageDTO) {
         String name = travelPackageDTO.getName();
@@ -67,6 +72,12 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         return travelPackageRepository.save(travelPackage);
     }
 
+    /**
+     * Updates an existing travel package.
+     * @param travelPackageId The ID of the travel package to be updated.
+     * @param travelPackageDTO The DTO containing updated information for the travel package.
+     * @return The updated travel package.
+     */
     @Override
     public TravelPackage updateTravelPackage(Long travelPackageId, TravelPackageDTO travelPackageDTO) {
         String name = travelPackageDTO.getName();
@@ -94,6 +105,11 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         return travelPackageRepository.save(travelPackage);
     }
 
+    /**
+     * Adds a destination to a travel package.
+     * @param travelPackageId The ID of the travel package.
+     * @param destinationId The ID of the destination to be added.
+     */
     @Override
     public void addDestinationToTravelPackage(Long travelPackageId, Long destinationId) {
         TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
@@ -112,6 +128,11 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         travelPackage.addDestination(destination);
     }
 
+    /**
+     * Adds a passenger to a travel package.
+     * @param travelPackageId The ID of the travel package.
+     * @param passengerId The ID of the passenger to be added.
+     */
     @Override
     public void addPassengerToTravelPackage(Long travelPackageId, Long passengerId) {
         TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
@@ -137,28 +158,52 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         travelPackage.setPassengerCapacity(passengerCapacity - 1);
     }
 
+    /**
+     * Retrieves a travel package by ID.
+     * @param travelPackageId The ID of the travel package to retrieve.
+     * @return The travel package with the specified ID.
+     */
     @Override
     public TravelPackage getTravelPackage(Long travelPackageId) {
         return travelPackageRepository.findById(travelPackageId).orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
     }
 
+    /**
+     * Retrieves all travel packages.
+     * @return A list of all travel packages.
+     */
     @Override
     public List<TravelPackage> getAllTravelPackages() {
         return travelPackageRepository.findAll();
     }
 
+    /**
+     * Retrieves all passengers enrolled in a travel package.
+     * @param travelPackageId The ID of the travel package.
+     * @return A list of all passengers enrolled in the travel package.
+     */
     @Override
     public List<Passenger> getAllPassengers(Long travelPackageId) {
         TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId).orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
         return travelPackage.getPassengers();
     }
 
+    /**
+     * Retrieves all destinations included in a travel package.
+     * @param travelPackageId The ID of the travel package.
+     * @return A list of all destinations included in the travel package.
+     */
     @Override
     public List<Destination> getAllDestinations(Long travelPackageId) {
         TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId).orElseThrow(() -> new IllegalArgumentException("Travel Package Not Found"));
         return travelPackage.getDestinations();
     }
 
+    /**
+     * Removes a destination from a travel package.
+     * @param travelPackageId The ID of the travel package.
+     * @param destinationId The ID of the destination to be removed.
+     */
     @Override
     public void removeDestinationFromTravelPackage(Long travelPackageId, Long destinationId) {
         TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
@@ -177,6 +222,11 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         travelPackage.removeDestination(destination);
     }
 
+    /**
+     * Removes a passenger from a travel package.
+     * @param travelPackageId The ID of the travel package.
+     * @param passengerId The ID of the passenger to be removed.
+     */
     @Override
     public void removePassengerFromTravelPackage(Long travelPackageId, Long passengerId) {
         TravelPackage travelPackage = travelPackageRepository.findById(travelPackageId)
@@ -197,6 +247,10 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         travelPackage.setPassengerCapacity(passengerCapacity + 1);
     }
 
+    /**
+     * Deletes a travel package by ID.
+     * @param travelPackageId The ID of the travel package to be deleted.
+     */
     @Override
     public void deleteTravelPackage(Long travelPackageId) {
         travelPackageRepository.deleteById(travelPackageId);

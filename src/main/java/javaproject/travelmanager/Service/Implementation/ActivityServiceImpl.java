@@ -32,6 +32,12 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
 
+    /**
+     * Creates a new activity based on the provided activity DTO.
+     * @param activityDTO The DTO containing information about the activity.
+     * @return The created activity.
+     * @throws IllegalArgumentException if the specified destination ID in the DTO does not exist.
+     */
     @Override
     public Activity createActivity(ActivityDTO activityDTO) {
         String name = activityDTO.getName();
@@ -52,6 +58,13 @@ public class ActivityServiceImpl implements ActivityService {
         return activityRepository.save(activity);
     }
 
+    /**
+     * Updates an existing activity with the provided ID using information from the activity DTO.
+     * @param activityId The ID of the activity to update.
+     * @param activityDTO The DTO containing updated information about the activity.
+     * @return The updated activity.
+     * @throws IllegalArgumentException if the activity with the specified ID is not found.
+     */
     @Override
     public Activity updateActivity(Long activityId, ActivityDTO activityDTO) {
         String name = activityDTO.getName();
@@ -72,6 +85,12 @@ public class ActivityServiceImpl implements ActivityService {
         return activityRepository.save(activity);
     }
 
+    /**
+     * Associates a destination with the specified activity.
+     * @param activityId The ID of the activity.
+     * @param destinationId The ID of the destination to associate with the activity.
+     * @throws IllegalArgumentException if either the activity or destination with the specified IDs is not found.
+     */
     @Override
     public void setDestinationToActivity(Long activityId, Long destinationId) {
         Destination destination = destinationRepository.findById(destinationId)
@@ -84,23 +103,43 @@ public class ActivityServiceImpl implements ActivityService {
         activityRepository.save(activity);
     }
 
-
+    /**
+     * Retrieves the activity with the specified ID.
+     * @param activityId The ID of the activity to retrieve.
+     * @return The activity corresponding to the provided ID.
+     * @throws IllegalArgumentException if no activity is found with the provided ID.
+     */
     @Override
     public Activity getActivity(Long activityId) {
         return  activityRepository.findById(activityId).orElseThrow(() -> new IllegalArgumentException("Activity Not present"));
     }
 
+    /**
+     * Retrieves all activities.
+     * @return A list of all activities.
+     */
     @Override
     public List<Activity> getAllActivities() {
         return activityRepository.findAll();
     }
 
+    /**
+     * Retrieves the destination associated with the specified activity.
+     * @param activityId The ID of the activity.
+     * @return The destination associated with the activity.
+     * @throws IllegalArgumentException if no activity is found with the provided ID.
+     */
     @Override
     public Destination getDestinationFromActivity(Long activityId) {
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new IllegalArgumentException("Activity Not present"));
         return activity.getDestination();
     }
 
+    /**
+     * Removes the associated destination from the specified activity.
+     * @param activityId The ID of the activity from which to remove the destination.
+     * @throws IllegalArgumentException if no activity is found with the provided ID.
+     */
     @Override
     public void removeDestinationFromActivity(Long activityId) {
         Activity activity = activityRepository.findById(activityId)
@@ -110,7 +149,10 @@ public class ActivityServiceImpl implements ActivityService {
         activityRepository.save(activity);
     }
 
-
+    /**
+     * Deletes the activity with the specified ID.
+     * @param activityId The ID of the activity to delete.
+     */
     @Override
     public void deleteActivity(Long activityId) {
         activityRepository.deleteById(activityId);

@@ -7,8 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Service class responsible for printing details related to travel packages.
+ * This service provides methods to print itinerary, passenger list, passenger details, and available activities.
+ */
 @Service
-@Transactional
 public class TravelPackagePrintServiceImpl implements TravelPackagePrintService {
     private final TravelPackageService travelPackageService;
 
@@ -18,6 +21,7 @@ public class TravelPackagePrintServiceImpl implements TravelPackagePrintService 
 
     /**
      * Prints the itinerary of the travel package, including destinations and activities.
+     * @param travelPackageId The ID of the travel package to print the itinerary for.
      */
     @Override
     public void printItinerary(Long travelPackageId) {
@@ -43,7 +47,8 @@ public class TravelPackagePrintServiceImpl implements TravelPackagePrintService 
     }
 
     /**
-     * Prints the list of passengers enrolled in the travel package.
+     * Prints the list of passengers enrolled in a travel package.
+     * @param travelPackageId The ID of the travel package.
      */
     @Override
     public void printPassengerList(Long travelPackageId) {
@@ -66,7 +71,8 @@ public class TravelPackagePrintServiceImpl implements TravelPackagePrintService 
     }
 
     /**
-     * Prints details about each passenger in the travel package, including their activities.
+     * Prints details of passengers, including their activities, in a travel package.
+     * @param travelPackageId The ID of the travel package.
      */
     @Override
     public void printPassengerDetails(Long travelPackageId) {
@@ -100,7 +106,8 @@ public class TravelPackagePrintServiceImpl implements TravelPackagePrintService 
     }
 
     /**
-     * Prints the available activities in the travel package, including the number of available spaces.
+     * Prints the available activities in a travel package, along with their destinations and available spaces.
+     * @param travelPackageId The ID of the travel package.
      */
     @Override
     public void printAvailableActivities(Long travelPackageId) {
